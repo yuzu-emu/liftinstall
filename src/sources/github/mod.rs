@@ -41,7 +41,8 @@ impl ReleaseSource for GithubReleases {
             .get(&format!(
                 "https://api.github.com/repos/{}/releases",
                 config.repo
-            )).header(USER_AGENT, "liftinstall (j-selby)")
+            ))
+            .header(USER_AGENT, "liftinstall (j-selby)")
             .send()
             .map_err(|x| format!("Error while sending HTTP request: {:?}", x))?;
 
@@ -87,14 +88,16 @@ impl ReleaseSource for GithubReleases {
                 let string = match asset["name"].as_str() {
                     Some(v) => v,
                     None => {
-                        return Err("JSON payload missing information about release name".to_string())
+                        return Err(
+                            "JSON payload missing information about release name".to_string()
+                        );
                     }
                 };
 
                 let url = match asset["browser_download_url"].as_str() {
                     Some(v) => v,
                     None => {
-                        return Err("JSON payload missing information about release URL".to_string())
+                        return Err("JSON payload missing information about release URL".to_string());
                     }
                 };
 

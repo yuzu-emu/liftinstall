@@ -40,7 +40,7 @@ extern crate log;
 extern crate chrono;
 
 extern crate clap;
-
+#[cfg(windows)]
 extern crate winapi;
 
 mod archives;
@@ -112,7 +112,8 @@ fn main() {
                 .value_name("TARGET")
                 .help("Launches the specified executable after checking for updates")
                 .takes_value(true),
-        ).arg(
+        )
+        .arg(
             Arg::with_name("swap")
                 .long("swap")
                 .value_name("TARGET")
@@ -280,14 +281,15 @@ fn main() {
     let resizable = false;
     let debug = true;
 
-    run(
-        &format!("{} Installer", app_name),
-        Content::Url(http_address),
-        Some(size),
-        resizable,
-        debug,
-        |_| {},
-        |wv, msg, _| {
+    web_view::builder()
+        .title(&format!("{} Installer", app_name))
+        .content(Content::Url(http_address))
+        .size(size.0, size.1)
+        .resizable(resizable)
+        .debug(debug)
+        .user_data(())
+        .invoke_handler(|wv, msg| {
+            let mut cb_result = Ok(());
             let command: CallbackType =
                 serde_json::from_str(msg).log_expect(&format!("Unable to parse string: {:?}", msg));
 
@@ -304,15 +306,16 @@ fn main() {
                     };
 
                     #[cfg(not(windows))]
-                    let result =
-                        wv.dialog(Dialog::ChooseDirectory, "Select a install directory...", "");
+                    let result = wv
+                        .dialog()
+                        .choose_directory("Select a install directory...", "");
 
-                    if !result.is_empty() {
-                        let result = serde_json::to_string(&result)
+                    if result.is_ok() {
+                        let result = serde_json::to_string(&result.ok())
                             .log_expect("Unable to serialize response");
                         let command = format!("{}({});", callback_name, result);
                         debug!("Injecting response: {}", command);
-                        wv.eval(&command);
+                        cb_result = wv.eval(&command);
                     }
                 }
                 CallbackType::Log { msg, kind } => {
@@ -326,7 +329,8 @@ fn main() {
                     log!(target: "liftinstall::frontend-js", kind, "{}", msg);
                 }
             }
-        },
-        (),
-    );
+            cb_result
+        })
+        .run()
+        .expect("Unable to launch Web UI!");
 }

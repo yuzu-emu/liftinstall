@@ -8,7 +8,7 @@ description = "An adaptable installer for your application."
 build = "build.rs"
 
 [dependencies]
-web-view = {git = "https://github.com/Boscop/web-view.git", rev = "555f422d09cbb94e82a728d47e9e07ca91963f6e"}
+web-view = "0.4.0"
 
 hyper = "0.11.27"
 futures = "*"

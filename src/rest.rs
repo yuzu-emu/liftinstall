@@ -62,7 +62,8 @@ impl WebServer {
                     Ok(WebService {
                         framework: framework.clone(),
                     })
-                }).log_expect("Failed to bind to port");
+                })
+                .log_expect("Failed to bind to port");
 
             server.run().log_expect("Failed to run HTTP server");
         });

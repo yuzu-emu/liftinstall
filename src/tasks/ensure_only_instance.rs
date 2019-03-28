@@ -7,8 +7,8 @@ use tasks::TaskDependency;
 use tasks::TaskMessage;
 use tasks::TaskParamType;
 
-use native::Process;
 use native::get_process_names;
+use native::Process;
 
 use std::process;
 
@@ -23,7 +23,7 @@ impl Task for EnsureOnlyInstanceTask {
     ) -> Result<TaskParamType, String> {
         assert_eq!(input.len(), 0);
 
-        let current_pid =  process::id() as usize;
+        let current_pid = process::id() as usize;
         for Process { pid, name } in get_process_names() {
             if pid == current_pid {
                 continue;

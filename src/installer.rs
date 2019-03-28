@@ -328,7 +328,8 @@ impl InstallerFramework {
                 x.to_str()
                     .log_expect("Unable to convert argument to String")
                     .to_string()
-            }).collect();
+            })
+            .collect();
 
         {
             let new_app_file = match File::create(&args_file) {
