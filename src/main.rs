@@ -30,7 +30,7 @@ extern crate semver;
 
 extern crate dirs;
 extern crate tar;
-extern crate xz_decom;
+extern crate xz2;
 extern crate zip;
 
 extern crate fern;

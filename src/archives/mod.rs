@@ -10,7 +10,7 @@ use std::io::Read;
 use std::iter::Iterator;
 use std::path::PathBuf;
 
-use xz_decom;
+use xz2::read::XzDecoder;
 
 pub trait Archive<'a> {
     /// func: iterator value, max size, file name, file contents
@@ -92,8 +92,10 @@ pub fn read_archive<'a>(name: &str, data: &'a [u8]) -> Result<Box<Archive<'a> + 
         Ok(Box::new(ZipArchive { archive }))
     } else if name.ends_with(".tar.xz") {
         // Decompress a .tar.xz file
-        let decompressed_data = xz_decom::decompress(data)
-            .map_err(|x| format!("Failed to build decompressor: {:?}", x))?;
+        let mut decompresser = XzDecoder::new(data);
+        let mut decompressed_data = Vec::new();
+        decompresser.read_to_end(&mut decompressed_data)
+            .map_err(|x| format!("Failed to decompress data: {:?}", x))?;
 
         let decompressed_contents: Box<Read> = Box::new(Cursor::new(decompressed_data));
 

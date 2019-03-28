@@ -11,38 +11,38 @@ build = "build.rs"
 web-view = "0.4.0"
 
 hyper = "0.11.27"
-futures = "*"
-mime_guess = "1.8.3"
-url = "*"
+futures = "0.1.25"
+mime_guess = "1.8.6"
+url = "1.7.2"
 
-reqwest = "0.9.0"
-number_prefix = "0.2.7"
+reqwest = "0.9.12"
+number_prefix = "0.3.0"
 
-serde = "1.0.27"
-serde_derive = "1.0.27"
-serde_json = "1.0.9"
+serde = "1.0.89"
+serde_derive = "1.0.89"
+serde_json = "1.0.39"
 
-toml = "0.4"
+toml = "0.5.0"
 
 semver = {version = "0.9.0", features = ["serde"]}
-regex = "0.2"
+regex = "1.1.2"
 
 dirs = "1.0"
-zip = "0.4.2"
-xz-decom = {git = "https://github.com/j-selby/xz-decom.git", rev = "9ebf3d00d9ff909c39eec1d2cf7e6e068ce214e5"}
+zip = "0.5.1"
+xz2 = "0.1.6"
 tar = "0.4"
 
 log = "0.4"
 fern = "0.5"
-chrono = "0.4.5"
+chrono = "0.4.6"
 
 clap = "2.32.0"
 
 [build-dependencies]
-walkdir = "2"
-serde = "1.0.27"
-serde_derive = "1.0.27"
-toml = "0.4"
+walkdir = "2.2.7"
+serde = "1.0.89"
+serde_derive = "1.0.89"
+toml = "0.5.0"
 
 [target.'cfg(windows)'.dependencies]
 # NFD is needed on Windows, as web-view doesn't work correctly here
