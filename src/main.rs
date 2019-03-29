@@ -301,8 +301,8 @@ fn main() {
                     let result = match nfd::open_pick_folder(None)
                         .log_expect("Unable to open folder dialog")
                     {
-                        Response::Okay(v) => v,
-                        _ => return,
+                        Response::Okay(v) => Ok(v),
+                        _ => Err(()),
                     };
 
                     #[cfg(not(windows))]
