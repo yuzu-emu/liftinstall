@@ -1,11 +1,18 @@
-os: linux
-dist: trusty
-sudo: required
-services:
-  - docker
+matrix:
+  include:
+    - os: linux
+      language: cpp
+      sudo: required
+      dist: trusty
+      services: docker
+      install: docker pull ubuntu:18.04
+      script: docker run -v $(pwd):/liftinstall ubuntu:18.04 /bin/bash -ex /liftinstall/.travis/build.sh
 
-install:
- - docker pull ubuntu:18.04
+    - os: osx
+      language: rust
+      osx_image: xcode10
+      script: cargo build
 
-script:
- - docker run -v $(pwd):/liftinstall ubuntu:18.04 /bin/bash -ex /liftinstall/.travis/build.sh
+    - os: windows
+      language: rust
+      script: cargo build
