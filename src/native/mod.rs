@@ -3,8 +3,8 @@
 /// Basic definition of some running process.
 #[derive(Debug)]
 pub struct Process {
-    pub pid : usize,
-    pub name : String
+    pub pid: usize,
+    pub name: String,
 }
 
 #[cfg(windows)]
@@ -23,13 +23,12 @@ mod natives {
     use std::process::Command;
 
     use winapi::shared::minwindef::{DWORD, FALSE, MAX_PATH};
+    use winapi::um::processthreadsapi::OpenProcess;
+    use winapi::um::psapi::{
+        EnumProcessModulesEx, GetModuleFileNameExW, K32EnumProcesses, LIST_MODULES_ALL,
+    };
     use winapi::um::winnt::{
         HANDLE, PROCESS_QUERY_INFORMATION, PROCESS_TERMINATE, PROCESS_VM_READ,
-    };
-    use winapi::um::processthreadsapi::{OpenProcess};
-    use winapi::um::psapi::{
-        K32EnumProcesses,
-        EnumProcessModulesEx, GetModuleFileNameExW, LIST_MODULES_ALL,
     };
 
     extern "C" {
@@ -149,9 +148,7 @@ mod natives {
 
         let size = ::std::mem::size_of::<DWORD>() * process_ids.len();
         unsafe {
-            if K32EnumProcesses(process_ids.as_mut_ptr(),
-                                size as DWORD,
-                                &mut cb_needed) == 0 {
+            if K32EnumProcesses(process_ids.as_mut_ptr(), size as DWORD, &mut cb_needed) == 0 {
                 return vec![];
             }
         }
@@ -160,7 +157,7 @@ mod natives {
 
         let mut processes = Vec::new();
 
-        for i in 0 .. nb_processes {
+        for i in 0..nb_processes {
             let pid = process_ids[i as usize];
 
             unsafe {
@@ -169,20 +166,25 @@ mod natives {
                     let mut process_name = [0u16; MAX_PATH + 1];
                     let mut cb_needed = 0;
 
-                    if EnumProcessModulesEx(process_handler,
-                                            &mut h_mod,
-                                            ::std::mem::size_of::<DWORD>() as DWORD,
-                                            &mut cb_needed,
-                                            LIST_MODULES_ALL) != 0 {
-                        GetModuleFileNameExW(process_handler,
-                                           h_mod,
-                                           process_name.as_mut_ptr(),
-                                           MAX_PATH as DWORD + 1);
+                    if EnumProcessModulesEx(
+                        process_handler,
+                        &mut h_mod,
+                        ::std::mem::size_of::<DWORD>() as DWORD,
+                        &mut cb_needed,
+                        LIST_MODULES_ALL,
+                    ) != 0
+                    {
+                        GetModuleFileNameExW(
+                            process_handler,
+                            h_mod,
+                            process_name.as_mut_ptr(),
+                            MAX_PATH as DWORD + 1,
+                        );
 
                         let mut pos = 0;
                         for x in process_name.iter() {
                             if *x == 0 {
-                                break
+                                break;
                             }
                             pos += 1;
                         }
@@ -210,11 +212,11 @@ mod natives {
     use logging::LoggingErrors;
 
     pub fn create_shortcut(
-        name: &str,
-        description: &str,
-        target: &str,
-        args: &str,
-        working_dir: &str,
+        _name: &str,
+        _description: &str,
+        _target: &str,
+        _args: &str,
+        _working_dir: &str,
     ) -> Result<String, String> {
         // TODO: no-op
         warn!("create_shortcut is stubbed!");
