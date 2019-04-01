@@ -43,6 +43,10 @@ extern crate clap;
 #[cfg(windows)]
 extern crate winapi;
 
+#[cfg(not(windows))]
+extern crate sysinfo;
+extern crate slug;
+
 mod archives;
 mod assets;
 mod config;
