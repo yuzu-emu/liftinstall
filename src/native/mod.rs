@@ -211,16 +211,67 @@ mod natives {
 
     use logging::LoggingErrors;
 
-    pub fn create_shortcut(
-        _name: &str,
-        _description: &str,
-        _target: &str,
-        _args: &str,
-        _working_dir: &str,
-    ) -> Result<String, String> {
-        // TODO: no-op
-        warn!("create_shortcut is stubbed!");
+    use sysinfo::{ProcessExt, SystemExt};
 
+    use dirs;
+
+    use slug::slugify;
+    use std::fs::{create_dir_all, File};
+    use std::io::Write;
+
+    #[cfg(target_os = "linux")]
+    pub fn create_shortcut(
+        name: &str,
+        description: &str,
+        target: &str,
+        args: &str,
+        working_dir: &str,
+    ) -> Result<String, String> {
+        // FIXME: no icon will be shown since no icon is provided
+        let data_local_dir = dirs::data_local_dir();
+        match data_local_dir {
+            Some(x) => {
+                let mut path = x;
+                path.push("applications");
+                match create_dir_all(path.to_path_buf()) {
+                    Ok(_) => (()),
+                    Err(e) => {
+                        return Err(format!(
+                            "Local data directory does not exist and cannot be created: {}",
+                            e
+                        ));
+                    }
+                };
+                path.push(format!("{}.desktop", slugify(name))); // file name
+                let desktop_file = format!(
+                    "[Desktop Entry]\nName={}\nExec=\"{}\" {}\nComment={}\nPath={}\n",
+                    name, target, args, description, working_dir
+                );
+                let desktop_f = File::create(path);
+                let mut desktop_f = match desktop_f {
+                    Ok(file) => file,
+                    Err(e) => return Err(format!("Unable to create desktop file: {}", e)),
+                };
+                let mut desktop_f = desktop_f.write_all(desktop_file.as_bytes());
+                match desktop_f {
+                    Ok(_) => Ok("".to_string()),
+                    Err(e) => Err(format!("Unable to write desktop file: {}", e)),
+                }
+            }
+            // return error when failed to acquire local data directory
+            None => Err("Unable to determine local data directory".to_string()),
+        }
+    }
+
+    #[cfg(target_os = "macos")]
+    pub fn create_shortcut(
+        name: &str,
+        description: &str,
+        target: &str,
+        args: &str,
+        working_dir: &str,
+    ) -> Result<String, String> {
+        warn!("STUB! Creating shortcut is not implemented on macOS");
         Ok("".to_string())
     }
 
@@ -244,8 +295,17 @@ mod natives {
 
     /// Returns a list of running processes
     pub fn get_process_names() -> Vec<super::Process> {
-        // TODO: no-op
-        vec![]
+        // a platform-independent implementation using sysinfo crate
+        let mut processes: Vec<super::Process> = Vec::new();
+        let mut system = sysinfo::System::new();
+        system.refresh_all();
+        for (pid, procs) in system.get_process_list() {
+            processes.push(super::Process {
+                pid: *pid as usize,
+                name: procs.name().to_string(),
+            });
+        }
+        processes // return running processes
     }
 }
 
