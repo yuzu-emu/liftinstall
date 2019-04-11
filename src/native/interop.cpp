@@ -8,6 +8,7 @@
 #include "objbase.h"
 #include "objidl.h"
 #include "shlguid.h"
+#include "shlobj.h"
 
 // https://stackoverflow.com/questions/52101827/windows-10-getsyscolor-does-not-get-dark-ui-color-theme
 extern "C" int isDarkThemeActive() {
@@ -32,60 +33,65 @@ extern "C" int saveShortcut(
     const char *description,
     const char *path,
     const char *args,
-    const char *workingDir) {
-    char* errStr = NULL;
+    const char *workingDir)
+{
+    char *errStr = NULL;
     HRESULT h;
-    IShellLink* shellLink = NULL;
-    IPersistFile* persistFile = NULL;
+    IShellLink *shellLink = NULL;
+    IPersistFile *persistFile = NULL;
 
 #ifdef _WIN64
-    wchar_t wName[MAX_PATH+1];
+    wchar_t wName[MAX_PATH + 1];
 #else
-    WORD wName[MAX_PATH+1];
+    WORD wName[MAX_PATH + 1];
 #endif
 
     int id;
 
     // Initialize the COM library
     h = CoInitialize(NULL);
-    if (FAILED(h)) {
+    if (FAILED(h))
+    {
         errStr = "Failed to initialize COM library";
         goto err;
     }
 
-    h = CoCreateInstance( CLSID_ShellLink, NULL, CLSCTX_INPROC_SERVER,
-            IID_IShellLink, (PVOID*)&shellLink );
-    if (FAILED(h)) {
+    h = CoCreateInstance(CLSID_ShellLink, NULL, CLSCTX_INPROC_SERVER,
+                         IID_IShellLink, (PVOID *)&shellLink);
+    if (FAILED(h))
+    {
         errStr = "Failed to create IShellLink";
         goto err;
     }
 
-    h = shellLink->QueryInterface(IID_IPersistFile, (PVOID*)&persistFile);
-    if (FAILED(h)) {
+    h = shellLink->QueryInterface(IID_IPersistFile, (PVOID *)&persistFile);
+    if (FAILED(h))
+    {
         errStr = "Failed to get IPersistFile";
         goto err;
     }
 
     //Append the shortcut name to the folder
-    MultiByteToWideChar(CP_UTF8,0,shortcutPath,-1,wName,MAX_PATH);
+    MultiByteToWideChar(CP_UTF8, 0, shortcutPath, -1, wName, MAX_PATH);
 
     // Load the file if it exists, to get the values for anything
     // that we do not set.  Ignore errors, such as if it does not exist.
     h = persistFile->Load(wName, 0);
 
     // Set the fields for which the application has set a value
-    if (description!=NULL)
+    if (description != NULL)
         shellLink->SetDescription(description);
-    if (path!=NULL)
+    if (path != NULL)
         shellLink->SetPath(path);
-    if (args!=NULL)
+    if (args != NULL)
         shellLink->SetArguments(args);
-    if (workingDir!=NULL)
+    if (workingDir != NULL)
         shellLink->SetWorkingDirectory(workingDir);
 
     //Save the shortcut to disk
     h = persistFile->Save(wName, TRUE);
-    if (FAILED(h)) {
+    if (FAILED(h))
+    {
         errStr = "Failed to save shortcut";
         goto err;
     }
@@ -105,3 +111,46 @@ err:
     return h;
 }
 
+// NOTE: app and cmdline cannot be constant when Unicode support is enabled
+extern "C" int spawnDetached(const char *app, const char *cmdline)
+{
+    // TODO: Unicode support
+    STARTUPINFOA si;
+    PROCESS_INFORMATION pi;
+
+    ZeroMemory(&si, sizeof(si));
+    si.cb = sizeof(si);
+    ZeroMemory(&pi, sizeof(pi));
+
+    if (!CreateProcessA(app,              // No module name (use command line)
+                        (LPSTR)cmdline,   // Command line, no unicode allowed
+                        NULL,             // Process handle not inheritable
+                        NULL,             // Thread handle not inheritable
+                        FALSE,            // Set handle inheritance to FALSE
+                        CREATE_NO_WINDOW, // Create without window
+                        NULL,             // Use parent's environment block
+                        NULL,             // Use parent's starting directory
+                        &si,              // Pointer to STARTUPINFO structure
+                        &pi)              // Pointer to PROCESS_INFORMATION structure
+    )
+    {
+        return GetLastError();
+    }
+
+    // Close process and thread handles.
+    CloseHandle(pi.hProcess);
+    CloseHandle(pi.hThread);
+    return 0;
+}
+
+extern "C" HRESULT getSystemFolder(wchar_t *out_path)
+{
+    PWSTR path = NULL;
+    HRESULT result = SHGetKnownFolderPath(FOLDERID_System, 0, NULL, &path);
+    if (result == S_OK)
+    {
+        wcscpy_s(out_path, MAX_PATH + 1, path);
+        CoTaskMemFree(path);
+    }
+    return result;
+}

@@ -20,10 +20,10 @@ mod natives {
     use logging::LoggingErrors;
 
     use std::env;
-    use std::process::Command;
 
     use winapi::shared::minwindef::{DWORD, FALSE, MAX_PATH};
     use winapi::um::processthreadsapi::OpenProcess;
+    use winapi::shared::winerror::HRESULT;
     use winapi::um::psapi::{
         EnumProcessModulesEx, GetModuleFileNameExW, K32EnumProcesses, LIST_MODULES_ALL,
     };
@@ -41,6 +41,15 @@ mod natives {
         ) -> ::std::os::raw::c_int;
 
         pub fn isDarkThemeActive() -> ::std::os::raw::c_uint;
+
+        pub fn spawnDetached(
+            app: *const ::std::os::raw::c_char,
+            cmdline: *const ::std::os::raw::c_char,
+        ) -> ::std::os::raw::c_int;
+
+        pub fn getSystemFolder(
+            out_path: *mut ::std::os::raw::c_ushort
+        ) -> HRESULT;
     }
 
     // Needed here for Windows interop
@@ -109,15 +118,35 @@ mod natives {
             .log_expect("Unable to convert log path to string")
             .replace(" ", "\\ ");
 
-        let target_arguments = format!("ping 127.0.0.1 -n 3 > nul && del {} {}", tool, log);
+        let target_arguments = format!("/C choice /C Y /N /D Y /T 2 & del {} {}", tool, log);
 
         info!("Launching cmd with {:?}", target_arguments);
 
-        Command::new("C:\\Windows\\system32\\cmd.exe")
-            .arg("/C")
-            .arg(&target_arguments)
-            .spawn()
-            .log_expect("Unable to start child process");
+        #[allow(unsafe_code)]
+        let spawn_result : i32 = unsafe {
+            let mut cmd_path = [0u16; MAX_PATH + 1];
+            let result = getSystemFolder(cmd_path.as_mut_ptr());
+            let mut pos = 0;
+            for x in cmd_path.iter() {
+                if *x == 0 {
+                    break;
+                }
+                pos += 1;
+            }
+            if result != winapi::shared::winerror::S_OK {
+                return;
+            }
+            spawnDetached(
+                CString::new(format!("{}\\cmd.exe", String::from_utf16_lossy(&cmd_path[..pos])))
+                    .log_expect("Unable to convert Windows system folder name to string")
+                    .as_ptr(),
+                CString::new(target_arguments).log_expect("Unable to convert arguments").as_ptr(),
+            )
+        };
+
+        if spawn_result != 0 {
+            warn!("Unable to start child process");
+        }
     }
 
     #[allow(unsafe_code)]
