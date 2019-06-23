@@ -109,14 +109,14 @@ pub struct LocalInstallation {
 
 macro_rules! declare_messenger_callback {
     ($target:expr) => {
-        &|msg: &TaskMessage| match msg {
-            &TaskMessage::DisplayMessage(msg, progress) => {
+        &|msg: &TaskMessage| match *msg {
+            TaskMessage::DisplayMessage(msg, progress) => {
                 if let Err(v) = $target.send(InstallMessage::Status(msg.to_string(), progress as _))
                 {
                     error!("Failed to submit queue message: {:?}", v);
                 }
             }
-            &TaskMessage::PackageInstalled => {
+            TaskMessage::PackageInstalled => {
                 if let Err(v) = $target.send(InstallMessage::PackageInstalled) {
                     error!("Failed to submit queue message: {:?}", v);
                 }

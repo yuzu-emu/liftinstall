@@ -148,7 +148,7 @@ fn main() {
                         info!("Copy attempt failed: {:?}, retrying in 3 seconds.", e);
                         thread::sleep(time::Duration::from_millis(3000));
                     } else {
-                        let _: () = Err(e).log_expect("Copying new binary failed");
+                        Err::<(), _>(e).log_expect("Copying new binary failed");
                     }
                 }
             }

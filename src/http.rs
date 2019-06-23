@@ -14,7 +14,7 @@ pub fn assert_ssl(url: &str) -> Result<(), String> {
     if url.starts_with("https://") {
         Ok(())
     } else {
-        Err(format!("Specified URL was not https"))
+        Err("Specified URL was not https".to_string())
     }
 }
 

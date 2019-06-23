@@ -1,3 +1,5 @@
+//! frontend/rest/services/default_path.rs
+//!
 //! The /api/default-path returns the default path for the application to install into.
 
 use frontend::rest::services::default_future;

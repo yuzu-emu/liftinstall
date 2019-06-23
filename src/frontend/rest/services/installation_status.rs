@@ -1,3 +1,5 @@
+//! frontend/rest/services/installation_status.rs
+//!
 //! The /api/installation-status call returns metadata relating to the current status of
 //! the installation.
 //!

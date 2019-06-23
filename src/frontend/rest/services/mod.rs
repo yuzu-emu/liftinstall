@@ -1,3 +1,5 @@
+//! frontend/rest/services/mod.rs
+//!
 //! Provides all services used by the REST server.
 
 use std::sync::{Arc, RwLock, RwLockReadGuard, RwLockWriteGuard};

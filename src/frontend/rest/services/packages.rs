@@ -1,3 +1,5 @@
+//! frontend/rest/services/packages.rs
+//!
 //! The /api/packages call returns all the currently installed packages.
 
 use frontend::rest::services::default_future;

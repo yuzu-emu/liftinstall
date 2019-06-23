@@ -1,3 +1,5 @@
+//! frontend/mod.rs
+//!
 //! Provides the frontend interface, including HTTP server.
 
 use std::sync::{Arc, RwLock};

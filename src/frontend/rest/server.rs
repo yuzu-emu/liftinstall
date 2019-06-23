@@ -1,3 +1,5 @@
+//! frontend/rest/server.rs
+//!
 //! Contains the over-arching server object + methods to manipulate it.
 
 use frontend::rest::services::WebService;

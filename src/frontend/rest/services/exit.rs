@@ -1,3 +1,5 @@
+//! frontend/rest/services/exit.rs
+//!
 //! The /api/exit closes down the application.
 
 use frontend::rest::services::default_future;

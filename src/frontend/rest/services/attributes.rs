@@ -1,3 +1,5 @@
+//! frontend/rest/services/attributes.rs
+//!
 //! The /api/attr call returns an executable script containing session variables.
 
 use frontend::rest::services::default_future;

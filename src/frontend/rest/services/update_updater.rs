@@ -1,3 +1,5 @@
+//! frontend/rest/services/update_updater.rs
+//!
 //! The /api/update-updater call attempts to update the currently running updater.
 
 use frontend::rest::services::default_future;

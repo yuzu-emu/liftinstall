@@ -1,3 +1,5 @@
+//! frontend/rest/services/install.rs
+//!
 //! The /api/install call installs a set of packages dictated by a POST request.
 
 use frontend::rest::services::stream_progress;

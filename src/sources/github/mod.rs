@@ -49,10 +49,11 @@ impl ReleaseSource for GithubReleases {
         match response.status() {
             StatusCode::OK => {}
             StatusCode::FORBIDDEN => {
-                return Err(format!(
+                return Err(
                     "GitHub is rate limiting you. Try moving to a internet connection \
                      that isn't shared, and/or disabling VPNs."
-                ));
+                        .to_string(),
+                );
             }
             _ => {
                 return Err(format!("Bad status code: {:?}.", response.status()));

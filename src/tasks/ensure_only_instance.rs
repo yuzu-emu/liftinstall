@@ -32,13 +32,13 @@ impl Task for EnsureOnlyInstanceTask {
             let exe = name;
 
             if exe.ends_with("maintenancetool.exe") || exe.ends_with("maintenancetool") {
-                return Err(format!("Maintenance tool is already running!"));
+                return Err("Maintenance tool is already running!".to_string());
             }
 
             for package in &context.database.packages {
                 for file in &package.files {
                     if exe.ends_with(file) {
-                        return Err(format!("The installed application is currently running!"));
+                        return Err("The installed application is currently running!".to_string());
                     }
                 }
             }
@@ -52,6 +52,6 @@ impl Task for EnsureOnlyInstanceTask {
     }
 
     fn name(&self) -> String {
-        format!("EnsureOnlyInstanceTask")
+        "EnsureOnlyInstanceTask".to_string()
     }
 }

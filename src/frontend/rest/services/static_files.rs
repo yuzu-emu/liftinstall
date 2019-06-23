@@ -1,3 +1,5 @@
+//! frontend/rest/services/static_files.rs
+//!
 //! The static files call returns static files embedded within the executable.
 //!
 //! e.g. index.html, main.js, ...

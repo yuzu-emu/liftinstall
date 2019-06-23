@@ -133,8 +133,8 @@ impl DependencyTree {
                 continue;
             }
 
-            let result = i.execute(context, &|msg: &TaskMessage| match msg {
-                &TaskMessage::DisplayMessage(msg, progress) => {
+            let result = i.execute(context, &|msg: &TaskMessage| match *msg {
+                TaskMessage::DisplayMessage(msg, progress) => {
                     messenger(&TaskMessage::DisplayMessage(
                         msg,
                         progress / total_tasks + (1.0 / total_tasks) * f64::from(count),
@@ -159,8 +159,8 @@ impl DependencyTree {
 
         let task_result = self
             .task
-            .execute(inputs, context, &|msg: &TaskMessage| match msg {
-                &TaskMessage::DisplayMessage(msg, progress) => {
+            .execute(inputs, context, &|msg: &TaskMessage| match *msg {
+                TaskMessage::DisplayMessage(msg, progress) => {
                     messenger(&TaskMessage::DisplayMessage(
                         msg,
                         progress / total_tasks + (1.0 / total_tasks) * f64::from(count),
@@ -179,8 +179,8 @@ impl DependencyTree {
                 continue;
             }
 
-            let result = i.execute(context, &|msg: &TaskMessage| match msg {
-                &TaskMessage::DisplayMessage(msg, progress) => {
+            let result = i.execute(context, &|msg: &TaskMessage| match *msg {
+                TaskMessage::DisplayMessage(msg, progress) => {
                     messenger(&TaskMessage::DisplayMessage(
                         msg,
                         progress / total_tasks + (1.0 / total_tasks) * f64::from(count),

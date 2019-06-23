@@ -1,3 +1,5 @@
+//! frontend/rest/services/uninstall.rs
+//!
 //! The /api/uninstall call uninstalls all packages.
 
 use frontend::rest::services::default_future;

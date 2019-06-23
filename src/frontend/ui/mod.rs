@@ -1,3 +1,5 @@
+//! frontend/ui/mod.rs
+//!
 //! Provides a web-view UI.
 
 use web_view::Content;

@@ -1,3 +1,5 @@
+//! frontend/rest/services/config.rs
+//!
 //! The /api/config call returns the current installer framework configuration.
 //!
 //! This endpoint should be usable directly from a <script> tag during loading.
