@@ -9,6 +9,24 @@
 #include "objidl.h"
 #include "shlguid.h"
 
+// https://stackoverflow.com/questions/52101827/windows-10-getsyscolor-does-not-get-dark-ui-color-theme
+extern "C" int isDarkThemeActive() {
+    DWORD   type;
+    DWORD   value;
+    DWORD   count = 4;
+    LSTATUS st = RegGetValue(
+        HKEY_CURRENT_USER,
+        TEXT("Software\\Microsoft\\Windows\\CurrentVersion\\Themes\\Personalize"),
+        TEXT("AppsUseLightTheme"),
+        RRF_RT_REG_DWORD,
+        &type,
+        &value,
+        &count );
+    if ( st == ERROR_SUCCESS && type == REG_DWORD )
+        return value == 0;
+    return false;
+}
+
 extern "C" int saveShortcut(
     const char *shortcutPath,
     const char *description,

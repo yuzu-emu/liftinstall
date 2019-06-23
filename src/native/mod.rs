@@ -39,6 +39,8 @@ mod natives {
             args: *const ::std::os::raw::c_char,
             workingDir: *const ::std::os::raw::c_char,
         ) -> ::std::os::raw::c_int;
+
+        pub fn isDarkThemeActive() -> ::std::os::raw::c_uint;
     }
 
     // Needed here for Windows interop
@@ -201,6 +203,14 @@ mod natives {
 
         processes
     }
+
+    // Needed here for Windows interop
+    #[allow(unsafe_code)]
+    pub fn is_dark_mode_active() -> bool {
+        unsafe {
+            isDarkThemeActive() == 1
+        }
+    }
 }
 
 #[cfg(not(windows))]
@@ -306,6 +316,12 @@ mod natives {
             });
         }
         processes // return running processes
+    }
+
+    /// Returns if dark mode is active on this system.
+    pub fn is_dark_mode_active() -> bool {
+        // No-op
+        false
     }
 }
 

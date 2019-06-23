@@ -23,6 +23,7 @@ use futures::sink::Sink;
 mod attributes;
 mod config;
 mod default_path;
+mod dark_mode;
 mod exit;
 mod install;
 mod installation_status;
@@ -131,6 +132,7 @@ impl Service for WebService {
         match (method, path.as_str()) {
             (Method::Get, "/api/attrs") => attributes::handle(self, req),
             (Method::Get, "/api/config") => config::handle(self, req),
+            (Method::Get, "/api/dark-mode") => dark_mode::handle(self, req),
             (Method::Get, "/api/default-path") => default_path::handle(self, req),
             (Method::Get, "/api/exit") => exit::handle(self, req),
             (Method::Get, "/api/packages") => packages::handle(self, req),

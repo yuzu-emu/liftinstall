@@ -38,6 +38,13 @@ function disable_shortcuts(e) {
     }
 }
 
+// Check to see if we need to enable dark mode
+ajax("/api/dark-mode", function(enable) {
+    if (enable) {
+        document.body.classList.add("has-background-black-ter");
+    }
+});
+
 window.addEventListener("keydown", disable_shortcuts);
 
 document.getElementById("window-title").innerText = base_attributes.name + " Installer";
@@ -62,11 +69,12 @@ var app = new Vue({
     },
     methods: {
         "exit": function() {
-            ajax("/api/exit", function() {}, function(msg) {
+            /*ajax("/api/exit", function() {}, function(msg) {
                 alert("LiftInstall encountered and error while exiting: " + msg
                     + "\nPlease upload the log file (in the same directory as the installer) to " +
                     "the respective maintainers for this application (where you got it from!)");
-            });
+            });*/
+            window.close();
         }
     }
 }).$mount("#app");

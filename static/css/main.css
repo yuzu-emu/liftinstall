@@ -86,3 +86,8 @@ pre {
     padding: 20px;
     background: #fff;
 }
+
+/* Dark mode */
+body.has-background-black-ter .subtitle, body.has-background-black-ter .column > div {
+    color: hsl(0, 0%, 96%);
+}
