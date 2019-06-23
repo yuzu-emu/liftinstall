@@ -18,8 +18,8 @@ use std::sync::mpsc::Sender;
 use std::io::copy;
 use std::io::Cursor;
 
-use std::process::exit;
 use std::process::Command;
+use std::process::{exit, Stdio};
 
 use config::BaseAttributes;
 use config::Config;
@@ -41,6 +41,8 @@ use std::fs::remove_file;
 use http;
 
 use number_prefix::{NumberPrefix, Prefixed, Standalone};
+
+use native;
 
 /// A message thrown during the installation of packages.
 #[derive(Serialize)]
@@ -80,6 +82,8 @@ pub struct InstallerFramework {
     // If we just completed an uninstall, and we should clean up after ourselves.
     pub burn_after_exit: bool,
     pub launcher_path: Option<String>,
+
+    attempted_shutdown: bool,
 }
 
 /// Contains basic properties on the status of the session. Subset of InstallationFramework.
@@ -394,6 +398,34 @@ impl InstallerFramework {
         }
     }
 
+    /// Shuts down the installer instance.
+    pub fn shutdown(&mut self) -> Result<(), String> {
+        if self.attempted_shutdown {
+            return Err("Cannot attempt shutdown twice!".to_string());
+        }
+
+        self.attempted_shutdown = true;
+
+        info!("Shutting down installer framework...");
+
+        if let Some(ref v) = self.launcher_path {
+            info!("Launching {:?}", v);
+
+            Command::new(v)
+                .stdout(Stdio::null())
+                .stderr(Stdio::null())
+                .spawn()
+                .map_err(|x| format!("Unable to start child process: {:?}", x))?;
+        }
+
+        if self.burn_after_exit {
+            info!("Requesting that self be deleted after exit.");
+            native::burn_on_exit(&self.base_attributes.name);
+        }
+
+        Ok(())
+    }
+
     /// Creates a new instance of the Installer Framework with a specified Config.
     pub fn new(attrs: BaseAttributes) -> Self {
         InstallerFramework {
@@ -405,6 +437,7 @@ impl InstallerFramework {
             is_launcher: false,
             burn_after_exit: false,
             launcher_path: None,
+            attempted_shutdown: false,
         }
     }
 
@@ -432,6 +465,7 @@ impl InstallerFramework {
             is_launcher: false,
             burn_after_exit: false,
             launcher_path: None,
+            attempted_shutdown: false,
         })
     }
 }

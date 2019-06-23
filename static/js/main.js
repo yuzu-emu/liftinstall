@@ -62,7 +62,11 @@ var app = new Vue({
     },
     methods: {
         "exit": function() {
-            ajax("/api/exit", function() {});
+            ajax("/api/exit", function() {}, function(msg) {
+                alert("LiftInstall encountered and error while exiting: " + msg
+                    + "\nPlease upload the log file (in the same directory as the installer) to " +
+                    "the respective maintainers for this application (where you got it from!)");
+            });
         }
     }
 }).$mount("#app");

@@ -97,7 +97,9 @@ impl ReleaseSource for GithubReleases {
                 let url = match asset["browser_download_url"].as_str() {
                     Some(v) => v,
                     None => {
-                        return Err("JSON payload missing information about release URL".to_string());
+                        return Err(
+                            "JSON payload missing information about release URL".to_string()
+                        );
                     }
                 };
 
