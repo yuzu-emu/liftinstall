@@ -7,6 +7,7 @@ use reqwest::header::CONTENT_LENGTH;
 use std::io::Read;
 use std::time::Duration;
 
+use reqwest::async::Client as AsyncClient;
 use reqwest::Client;
 
 /// Asserts that a URL is valid HTTPS, else returns an error.
@@ -26,18 +27,12 @@ pub fn build_client() -> Result<Client, String> {
         .map_err(|x| format!("Unable to build client: {:?}", x))
 }
 
-/// Downloads a text file from the specified URL.
-pub fn download_text(url: &str) -> Result<String, String> {
-    assert_ssl(url)?;
-
-    let mut client = build_client()?
-        .get(url)
-        .send()
-        .map_err(|x| format!("Failed to GET resource: {:?}", x))?;
-
-    client
-        .text()
-        .map_err(|v| format!("Failed to get text from resource: {:?}", v))
+/// Builds a customised async HTTP client.
+pub fn build_async_client() -> Result<AsyncClient, String> {
+    AsyncClient::builder()
+        .timeout(Duration::from_secs(8))
+        .build()
+        .map_err(|x| format!("Unable to build client: {:?}", x))
 }
 
 /// Streams a file from a HTTP server.

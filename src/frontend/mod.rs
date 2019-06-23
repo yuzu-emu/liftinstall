@@ -7,7 +7,7 @@ use std::sync::{Arc, RwLock};
 use installer::InstallerFramework;
 use logging::LoggingErrors;
 
-mod rest;
+pub mod rest;
 mod ui;
 
 /// Launches the main web server + UI. Returns when the framework has been consumed + web UI closed.
