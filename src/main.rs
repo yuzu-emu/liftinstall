@@ -56,19 +56,11 @@ mod http;
 mod installer;
 mod logging;
 mod native;
+mod self_update;
 mod sources;
 mod tasks;
 
 use installer::InstallerFramework;
-
-use std::path::PathBuf;
-
-use std::process::exit;
-use std::process::Command;
-use std::{thread, time};
-
-use std::fs::remove_file;
-use std::fs::File;
 
 use logging::LoggingErrors;
 
@@ -85,6 +77,7 @@ fn main() {
     logging::setup_logger(format!("{}_installer.log", config.name))
         .expect("Unable to setup logging!");
 
+    // Parse CLI arguments
     let app_name = config.name.clone();
 
     let app_about = format!("An interactive installer for {}", app_name);
@@ -111,100 +104,19 @@ fn main() {
 
     info!("{} installer", app_name);
 
+    // Handle self-updating if needed
     let current_exe = std::env::current_exe().log_expect("Current executable could not be found");
     let current_path = current_exe
         .parent()
         .log_expect("Parent directory of executable could not be found");
 
-    // Check to see if we are currently in a self-update
-    if let Some(to_path) = matches.value_of("swap") {
-        let to_path = PathBuf::from(to_path);
-
-        // Sleep a little bit to allow Windows to close the previous file handle
-        thread::sleep(time::Duration::from_millis(3000));
-
-        info!(
-            "Swapping installer from {} to {}",
-            current_exe.display(),
-            to_path.display()
-        );
-
-        // Attempt it a few times because Windows can hold a lock
-        for i in 1..=5 {
-            let swap_result = if cfg!(windows) {
-                use std::fs::copy;
-
-                copy(&current_exe, &to_path).map(|_x| ())
-            } else {
-                use std::fs::rename;
-
-                rename(&current_exe, &to_path)
-            };
-
-            match swap_result {
-                Ok(_) => break,
-                Err(e) => {
-                    if i < 5 {
-                        info!("Copy attempt failed: {:?}, retrying in 3 seconds.", e);
-                        thread::sleep(time::Duration::from_millis(3000));
-                    } else {
-                        Err::<(), _>(e).log_expect("Copying new binary failed");
-                    }
-                }
-            }
-        }
-
-        Command::new(to_path)
-            .spawn()
-            .log_expect("Unable to start child process");
-
-        exit(0);
+    self_update::perform_swap(&current_exe, matches.value_of("swap"));
+    if let Some(new_matches) = self_update::check_args(reinterpret_app, current_path) {
+        matches = new_matches;
     }
+    self_update::cleanup(current_path);
 
-    // If we just finished a update, we need to inject our previous command line arguments
-    let args_file = current_path.join("args.json");
-
-    if args_file.exists() {
-        let database: Vec<String> = {
-            let metadata_file =
-                File::open(&args_file).log_expect("Unable to open args file handle");
-
-            serde_json::from_reader(metadata_file).log_expect("Unable to read metadata file")
-        };
-
-        matches = reinterpret_app.get_matches_from(database);
-
-        info!("Parsed command line arguments from original instance");
-        remove_file(args_file).log_expect("Unable to clean up args file");
-    }
-
-    // Cleanup any remaining new maintenance tool instances if they exist
-    if cfg!(windows) {
-        let updater_executable = current_path.join("maintenancetool_new.exe");
-
-        if updater_executable.exists() {
-            // Sleep a little bit to allow Windows to close the previous file handle
-            thread::sleep(time::Duration::from_millis(3000));
-
-            // Attempt it a few times because Windows can hold a lock
-            for i in 1..=5 {
-                let swap_result = remove_file(&updater_executable);
-                match swap_result {
-                    Ok(_) => break,
-                    Err(e) => {
-                        if i < 5 {
-                            info!("Cleanup attempt failed: {:?}, retrying in 3 seconds.", e);
-                            thread::sleep(time::Duration::from_millis(3000));
-                        } else {
-                            warn!("Deleting temp binary failed after 5 attempts: {:?}", e);
-                        }
-                    }
-                }
-            }
-        }
-    }
-
-    // Load in metadata as to learn about the environment
+    // Load in metadata + setup the installer framework
     let metadata_file = current_path.join("metadata.json");
     let mut framework = if metadata_file.exists() {
         info!("Using pre-existing metadata file: {:?}", metadata_file);
