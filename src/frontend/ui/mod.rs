@@ -4,8 +4,6 @@
 
 use web_view::Content;
 
-use nfd::Response;
-
 use logging::LoggingErrors;
 
 use log::Level;
@@ -38,25 +36,18 @@ pub fn start_ui(app_name: &str, http_address: &str, is_launcher: bool) {
 
             match command {
                 CallbackType::SelectInstallDir { callback_name } => {
-                    #[cfg(windows)]
-                    let result = match nfd::open_pick_folder(None)
-                        .log_expect("Unable to open folder dialog")
-                    {
-                        Response::Okay(v) => Ok(v),
-                        _ => Err(()),
-                    };
-
-                    #[cfg(not(windows))]
                     let result = wv
                         .dialog()
                         .choose_directory("Select a install directory...", "");
 
-                    if result.is_ok() {
-                        let result = serde_json::to_string(&result.ok())
-                            .log_expect("Unable to serialize response");
-                        let command = format!("{}({});", callback_name, result);
-                        debug!("Injecting response: {}", command);
-                        cb_result = wv.eval(&command);
+                    if let Ok(Some(new_path)) = result {
+                        if new_path.to_string_lossy().len() > 0 {
+                            let result = serde_json::to_string(&new_path)
+                                .log_expect("Unable to serialize response");
+                            let command = format!("{}({});", callback_name, result);
+                            debug!("Injecting response: {}", command);
+                            cb_result = wv.eval(&command);
+                        }
                     }
                 }
                 CallbackType::Log { msg, kind } => {

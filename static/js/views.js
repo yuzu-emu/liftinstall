@@ -84,6 +84,8 @@ const DownloadConfig = {
                 ajax("/api/default-path", function(e) {
                     if (e.path != null) {
                         app.install_location = e.path;
+                    } else {
+                        console.warn("App location received is empty!");
                     }
                 });
 

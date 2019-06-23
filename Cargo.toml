@@ -8,7 +8,7 @@ description = "An adaptable installer for your application."
 build = "build.rs"
 
 [dependencies]
-web-view = "0.4.0"
+web-view = {git = "https://github.com/j-selby/web-view.git", rev = "752106e4637356cbdb39a0bf1113ea3ae8a14243"}
 
 hyper = "0.11.27"
 futures = "0.1.25"
@@ -45,9 +45,6 @@ serde_derive = "1.0.89"
 toml = "0.5.0"
 
 [target.'cfg(windows)'.dependencies]
-# NFD is needed on Windows, as web-view doesn't work correctly here
-nfd = "0.0.4"
-
 winapi = { version = "0.3", features = ["psapi", "winbase", "winioctl", "winnt"] }
 
 [target.'cfg(not(windows))'.dependencies]

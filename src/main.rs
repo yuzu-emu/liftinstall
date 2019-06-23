@@ -7,9 +7,6 @@
 #![deny(unsafe_code)]
 #![deny(missing_docs)]
 
-#[cfg(windows)]
-extern crate nfd;
-
 extern crate web_view;
 
 extern crate futures;
