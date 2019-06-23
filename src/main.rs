@@ -49,7 +49,6 @@ extern crate slug;
 extern crate sysinfo;
 
 mod archives;
-mod assets;
 mod config;
 mod frontend;
 mod http;

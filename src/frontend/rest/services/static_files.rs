@@ -4,6 +4,8 @@
 //!
 //! e.g. index.html, main.js, ...
 
+use frontend::rest::assets;
+
 use frontend::rest::services::default_future;
 use frontend::rest::services::Future;
 use frontend::rest::services::Request;
@@ -14,8 +16,6 @@ use hyper::header::{ContentLength, ContentType};
 use hyper::StatusCode;
 
 use logging::LoggingErrors;
-
-use assets;
 
 pub fn handle(_service: &WebService, req: Request) -> Future {
     // At this point, we have a web browser client. Search for a index page
