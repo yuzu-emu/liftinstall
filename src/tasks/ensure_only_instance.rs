@@ -19,7 +19,7 @@ impl Task for EnsureOnlyInstanceTask {
         &mut self,
         input: Vec<TaskParamType>,
         context: &mut InstallerFramework,
-        _messenger: &Fn(&TaskMessage),
+        _messenger: &dyn Fn(&TaskMessage),
     ) -> Result<TaskParamType, String> {
         assert_eq!(input.len(), 0);
 

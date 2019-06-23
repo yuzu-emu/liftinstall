@@ -41,7 +41,7 @@ pub type Response = hyper::server::Response;
 pub type Error = hyper::Error;
 
 /// The return type used by function calls to the web server.
-pub type Future = Box<futures::Future<Item = Response, Error = Error>>;
+pub type Future = Box<dyn futures::Future<Item = Response, Error = Error>>;
 
 /// If advanced functionality is not needed, return a default instant future.
 pub fn default_future(response: Response) -> Future {
