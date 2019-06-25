@@ -11,8 +11,8 @@ matrix:
     - os: osx
       language: rust
       osx_image: xcode10
-      script: cargo build
+      script: brew install yarn && cargo build
 
     - os: windows
       language: rust
-      script: cargo build
+      script: choco install nodejs yarn && cargo build
