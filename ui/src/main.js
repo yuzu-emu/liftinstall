@@ -1,0 +1,104 @@
+import Vue from 'vue'
+import App from './App.vue'
+import router from './router'
+import { ajax, stream_ajax } from './helpers'
+import 'buefy/dist/buefy.css'
+
+Vue.config.productionTip = false
+
+// Borrowed from http://tobyho.com/2012/07/27/taking-over-console-log/
+function intercept (method) {
+  console[method] = function () {
+    var message = Array.prototype.slice.apply(arguments).join(' ')
+    window.external.invoke(
+      JSON.stringify({
+        Log: {
+          kind: method,
+          msg: message
+        }
+      })
+    )
+  }
+}
+
+// Overwrite loggers with the logging backend
+if (window.external !== undefined && window.external.invoke !== undefined) {
+  window.onerror = function (msg, url, line) {
+    old_onerror(msg, url, line)
+    window.external.invoke(
+      JSON.stringify({
+        Log: {
+          kind: 'error',
+          msg: msg + ' @ ' + url + ':' + line
+        }
+      })
+    )
+  }
+
+  var methods = ['log', 'warn', 'error']
+  for (var i = 0; i < methods.length; i++) {
+    intercept(methods[i])
+  }
+}
+
+// Disable F5
+function disable_shortcuts (e) {
+  switch (e.keyCode) {
+    case 116: // F5
+      e.preventDefault()
+      break
+  }
+}
+
+// Check to see if we need to enable dark mode
+ajax('/api/dark-mode', function (enable) {
+  if (enable) {
+    document.body.classList.add('has-background-black-ter')
+  }
+})
+
+window.addEventListener('keydown', disable_shortcuts)
+
+document.getElementById('window-title').innerText =
+  base_attributes.name + ' Installer'
+
+function selectFileCallback (name) {
+  app.install_location = name
+}
+
+var app = new Vue({
+  router: router,
+  data: {
+    attrs: base_attributes,
+    config: {},
+    install_location: '',
+    // If the option to pick an install location should be provided
+    show_install_location: true,
+    metadata: {
+      database: [],
+      install_path: '',
+      preexisting_install: false
+    }
+  },
+  render: function (h) {
+    return h(App)
+  },
+  methods: {
+    exit: function () {
+      ajax(
+        '/api/exit',
+        function () {},
+        function (msg) {
+          alert(
+            'LiftInstall encountered and error while exiting: ' +
+              msg +
+              '\nPlease upload the log file (in the same directory as the installer) to ' +
+              'the respective maintainers for this application (where you got it from!)'
+          )
+        }
+      )
+    },
+    ajax: ajax,
+    stream_ajax: stream_ajax
+  }
+}).$mount('#app')
