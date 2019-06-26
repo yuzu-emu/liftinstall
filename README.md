@@ -22,6 +22,7 @@ For more detailed instructions, look at the usage documentation above.
 There are are few system dependencies depending on your platform:
 - For all platforms, `cargo` should be available on your PATH. [Rustup](https://rustup.rs/) is the 
   recommended way to achieve this. Stable or Nightly Rust works fine.
+- Have node.js and Yarn available on your PATH (for building UI components, not needed at runtime).
 - For Windows (MSVC), you need Visual Studio installed.
 - For Windows (Mingw), you need `gcc`/`g++` available on the PATH.
 - For Mac, you need Xcode installed, and Clang/etc available on the PATH.
