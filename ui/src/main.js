@@ -80,8 +80,8 @@ var app = new Vue({
       preexisting_install: false
     }
   },
-  render: function (h) {
-    return h(App)
+  render: function (caller) {
+    return caller(App)
   },
   methods: {
     exit: function () {
@@ -90,7 +90,7 @@ var app = new Vue({
         function () {},
         function (msg) {
           alert(
-            'LiftInstall encountered and error while exiting: ' +
+            'LiftInstall encountered an error while exiting: ' +
               msg +
               '\nPlease upload the log file (in the same directory as the installer) to ' +
               'the respective maintainers for this application (where you got it from!)'

@@ -43,10 +43,10 @@ export default {
   },
   methods: {
     update: function () {
-      this.router.push('/install/update')
+      this.$router.push('/install/update')
     },
     modify_packages: function () {
-      this.router.push('/packages')
+      this.$router.push('/packages')
     },
     prepare_uninstall: function () {
       this.show_uninstall = true
@@ -55,7 +55,7 @@ export default {
       this.show_uninstall = false
     },
     uninstall: function () {
-      this.router.push('/install/uninstall')
+      this.$router.push('/install/uninstall')
     }
   }
 }

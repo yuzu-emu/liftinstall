@@ -9,6 +9,8 @@ extern crate serde;
 extern crate serde_derive;
 extern crate toml;
 
+extern crate which;
+
 use std::env;
 use std::path::PathBuf;
 
@@ -30,7 +32,7 @@ pub struct BaseAttributes {
 #[cfg(windows)]
 fn handle_binary(config: &BaseAttributes) {
     let mut res = winres::WindowsResource::new();
-    res.set_icon("static/favicon.ico");
+    res.set_icon("ui/public/favicon.ico");
     res.set(
         "FileDescription",
         &format!("Interactive installer for {}", config.name),
@@ -85,18 +87,21 @@ fn main() {
     // Copy for the main build
     copy(&target_config, output_dir.join("bootstrap.toml")).expect("Unable to copy config file");
 
+    let yarn_binary = which::which("yarn")
+        .expect("Failed to find yarn - please go ahead and install it!");
+
     // Build and deploy frontend files
-    Command::new("yarn")
+    Command::new(&yarn_binary)
         .arg("--version")
         .spawn()
-        .expect("Please install Yarn");
-    Command::new("yarn")
+        .expect("Yarn could not be launched");
+    Command::new(&yarn_binary)
         .arg("--cwd")
         .arg(ui_dir.to_str().expect("Unable to covert path"))
         .spawn()
         .unwrap()
         .wait().expect("Unable to install Node.JS dependencies using Yarn");
-    Command::new("yarn")
+    Command::new(&yarn_binary)
         .args(&[
             "--cwd",
             ui_dir.to_str().expect("Unable to covert path"),

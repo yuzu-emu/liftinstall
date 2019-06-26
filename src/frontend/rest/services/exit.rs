@@ -25,7 +25,7 @@ pub fn handle(service: &WebService, _req: Request) -> Future {
                 Response::new()
                     .with_status(StatusCode::InternalServerError)
                     .with_header(ContentType::plaintext())
-                    .with_body("Failed to complete framework shutdown"),
+                    .with_body(format!("Failed to complete framework shutdown - {}", e)),
             )
         }
     }

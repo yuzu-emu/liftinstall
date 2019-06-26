@@ -4,7 +4,7 @@
             <div class="container is-max-height">
                 <div class="columns is-max-height">
                     <div class="column is-one-third has-padding" v-if="!$root.$data.metadata.is_launcher">
-                        <img src="./assets/logo.png" width="60%" />
+                        <img src="./assets/logo.png" width="60%" alt="Application icon" />
                         <br />
                         <br />
 
