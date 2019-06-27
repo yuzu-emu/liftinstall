@@ -22,14 +22,17 @@ mod natives {
     use std::env;
 
     use winapi::shared::minwindef::{DWORD, FALSE, MAX_PATH};
-    use winapi::um::processthreadsapi::OpenProcess;
+
     use winapi::shared::winerror::HRESULT;
+    use winapi::um::processthreadsapi::OpenProcess;
     use winapi::um::psapi::{
         EnumProcessModulesEx, GetModuleFileNameExW, K32EnumProcesses, LIST_MODULES_ALL,
     };
     use winapi::um::winnt::{
         HANDLE, PROCESS_QUERY_INFORMATION, PROCESS_TERMINATE, PROCESS_VM_READ,
     };
+
+    use widestring::U16CString;
 
     extern "C" {
         pub fn saveShortcut(
@@ -43,13 +46,11 @@ mod natives {
         pub fn isDarkThemeActive() -> ::std::os::raw::c_uint;
 
         pub fn spawnDetached(
-            app: *const ::std::os::raw::c_char,
-            cmdline: *const ::std::os::raw::c_char,
+            app: *const winapi::ctypes::wchar_t,
+            cmdline: *const winapi::ctypes::wchar_t,
         ) -> ::std::os::raw::c_int;
 
-        pub fn getSystemFolder(
-            out_path: *mut ::std::os::raw::c_ushort
-        ) -> HRESULT;
+        pub fn getSystemFolder(out_path: *mut ::std::os::raw::c_ushort) -> HRESULT;
     }
 
     // Needed here for Windows interop
@@ -122,8 +123,9 @@ mod natives {
 
         info!("Launching cmd with {:?}", target_arguments);
 
+        // Needs to use `spawnDetached` which is an unsafe C/C++ function from interop.cpp
         #[allow(unsafe_code)]
-        let spawn_result : i32 = unsafe {
+        let spawn_result: i32 = unsafe {
             let mut cmd_path = [0u16; MAX_PATH + 1];
             let result = getSystemFolder(cmd_path.as_mut_ptr());
             let mut pos = 0;
@@ -136,11 +138,16 @@ mod natives {
             if result != winapi::shared::winerror::S_OK {
                 return;
             }
+
             spawnDetached(
-                CString::new(format!("{}\\cmd.exe", String::from_utf16_lossy(&cmd_path[..pos])))
-                    .log_expect("Unable to convert Windows system folder name to string")
+                U16CString::from_str(
+                    format!("{}\\cmd.exe", String::from_utf16_lossy(&cmd_path[..pos])).as_str(),
+                )
+                .log_expect("Unable to convert string to wchar_t")
+                .as_ptr(),
+                U16CString::from_str(target_arguments.as_str())
+                    .log_expect("Unable to convert string to wchar_t")
                     .as_ptr(),
-                CString::new(target_arguments).log_expect("Unable to convert arguments").as_ptr(),
             )
         };
 
@@ -236,9 +243,7 @@ mod natives {
     // Needed here for Windows interop
     #[allow(unsafe_code)]
     pub fn is_dark_mode_active() -> bool {
-        unsafe {
-            isDarkThemeActive() == 1
-        }
+        unsafe { isDarkThemeActive() == 1 }
     }
 }
 

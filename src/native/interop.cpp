@@ -11,10 +11,11 @@
 #include "shlobj.h"
 
 // https://stackoverflow.com/questions/52101827/windows-10-getsyscolor-does-not-get-dark-ui-color-theme
-extern "C" int isDarkThemeActive() {
-    DWORD   type;
-    DWORD   value;
-    DWORD   count = 4;
+extern "C" int isDarkThemeActive()
+{
+    DWORD type;
+    DWORD value;
+    DWORD count = 4;
     LSTATUS st = RegGetValue(
         HKEY_CURRENT_USER,
         TEXT("Software\\Microsoft\\Windows\\CurrentVersion\\Themes\\Personalize"),
@@ -22,8 +23,8 @@ extern "C" int isDarkThemeActive() {
         RRF_RT_REG_DWORD,
         &type,
         &value,
-        &count );
-    if ( st == ERROR_SUCCESS && type == REG_DWORD )
+        &count);
+    if (st == ERROR_SUCCESS && type == REG_DWORD)
         return value == 0;
     return false;
 }
@@ -111,19 +112,26 @@ err:
     return h;
 }
 
-// NOTE: app and cmdline cannot be constant when Unicode support is enabled
-extern "C" int spawnDetached(const char *app, const char *cmdline)
+extern "C" int spawnDetached(const wchar_t *app, const wchar_t *cmdline)
 {
-    // TODO: Unicode support
-    STARTUPINFOA si;
+    STARTUPINFOW si;
     PROCESS_INFORMATION pi;
+    // make non-constant copy of the parameters
+    // this is allowed per https://docs.microsoft.com/en-us/windows/desktop/api/processthreadsapi/nf-processthreadsapi-createprocessw#security-remarks
+    wchar_t *app_copy = wcsdup(app);
+    wchar_t *cmdline_copy = wcsdup(cmdline);
+
+    if (app_copy == NULL || cmdline_copy == NULL)
+    {
+        return GetLastError();
+    }
 
     ZeroMemory(&si, sizeof(si));
     si.cb = sizeof(si);
     ZeroMemory(&pi, sizeof(pi));
 
-    if (!CreateProcessA(app,              // No module name (use command line)
-                        (LPSTR)cmdline,   // Command line, no unicode allowed
+    if (!CreateProcessW(app,              // module name
+                        (LPWSTR)cmdline,  // Command line, unicode is allowed
                         NULL,             // Process handle not inheritable
                         NULL,             // Thread handle not inheritable
                         FALSE,            // Set handle inheritance to FALSE
