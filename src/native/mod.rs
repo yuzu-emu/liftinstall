@@ -15,8 +15,6 @@ mod natives {
 
     const PROCESS_LEN: usize = 10192;
 
-    use std::ffi::CString;
-
     use logging::LoggingErrors;
 
     use std::env;
@@ -36,11 +34,11 @@ mod natives {
 
     extern "C" {
         pub fn saveShortcut(
-            shortcutPath: *const ::std::os::raw::c_char,
-            description: *const ::std::os::raw::c_char,
-            path: *const ::std::os::raw::c_char,
-            args: *const ::std::os::raw::c_char,
-            workingDir: *const ::std::os::raw::c_char,
+            shortcutPath: *const winapi::ctypes::wchar_t,
+            description: *const winapi::ctypes::wchar_t,
+            path: *const winapi::ctypes::wchar_t,
+            args: *const winapi::ctypes::wchar_t,
+            workingDir: *const winapi::ctypes::wchar_t,
         ) -> ::std::os::raw::c_int;
 
         pub fn isDarkThemeActive() -> ::std::os::raw::c_uint;
@@ -70,15 +68,16 @@ mod natives {
 
         info!("Generating shortcut @ {:?}", source_file);
 
-        let native_target_dir = CString::new(source_file.clone())
-            .log_expect("Error while converting to C-style string");
+        let native_target_dir = U16CString::from_str(source_file.clone())
+            .log_expect("Error while converting to wchar_t");
         let native_description =
-            CString::new(description).log_expect("Error while converting to C-style string");
+            U16CString::from_str(description).log_expect("Error while converting to wchar_t");
         let native_target =
-            CString::new(target).log_expect("Error while converting to C-style string");
-        let native_args = CString::new(args).log_expect("Error while converting to C-style string");
+            U16CString::from_str(target).log_expect("Error while converting to wchar_t");
+        let native_args =
+            U16CString::from_str(args).log_expect("Error while converting to wchar_t");
         let native_working_dir =
-            CString::new(working_dir).log_expect("Error while converting to C-style string");
+            U16CString::from_str(working_dir).log_expect("Error while converting to wchar_t");
 
         let shortcutResult = unsafe {
             saveShortcut(

@@ -2,6 +2,15 @@
  * Misc interop helpers.
 **/
 
+// Explicitly use the Unicode version of the APIs
+#ifndef UNICODE
+#define UNICODE
+#endif
+
+#ifndef _UNICODE
+#define _UNICODE
+#endif
+
 #include "windows.h"
 #include "winnls.h"
 #include "shobjidl.h"
@@ -30,24 +39,16 @@ extern "C" int isDarkThemeActive()
 }
 
 extern "C" int saveShortcut(
-    const char *shortcutPath,
-    const char *description,
-    const char *path,
-    const char *args,
-    const char *workingDir)
+    const wchar_t *shortcutPath,
+    const wchar_t *description,
+    const wchar_t *path,
+    const wchar_t *args,
+    const wchar_t *workingDir)
 {
     char *errStr = NULL;
     HRESULT h;
     IShellLink *shellLink = NULL;
     IPersistFile *persistFile = NULL;
-
-#ifdef _WIN64
-    wchar_t wName[MAX_PATH + 1];
-#else
-    WORD wName[MAX_PATH + 1];
-#endif
-
-    int id;
 
     // Initialize the COM library
     h = CoInitialize(NULL);
@@ -72,12 +73,9 @@ extern "C" int saveShortcut(
         goto err;
     }
 
-    //Append the shortcut name to the folder
-    MultiByteToWideChar(CP_UTF8, 0, shortcutPath, -1, wName, MAX_PATH);
-
     // Load the file if it exists, to get the values for anything
     // that we do not set.  Ignore errors, such as if it does not exist.
-    h = persistFile->Load(wName, 0);
+    h = persistFile->Load(shortcutPath, 0);
 
     // Set the fields for which the application has set a value
     if (description != NULL)
@@ -90,7 +88,7 @@ extern "C" int saveShortcut(
         shellLink->SetWorkingDirectory(workingDir);
 
     //Save the shortcut to disk
-    h = persistFile->Save(wName, TRUE);
+    h = persistFile->Save(shortcutPath, TRUE);
     if (FAILED(h))
     {
         errStr = "Failed to save shortcut";
@@ -118,8 +116,8 @@ extern "C" int spawnDetached(const wchar_t *app, const wchar_t *cmdline)
     PROCESS_INFORMATION pi;
     // make non-constant copy of the parameters
     // this is allowed per https://docs.microsoft.com/en-us/windows/desktop/api/processthreadsapi/nf-processthreadsapi-createprocessw#security-remarks
-    wchar_t *app_copy = wcsdup(app);
-    wchar_t *cmdline_copy = wcsdup(cmdline);
+    wchar_t *app_copy = _wcsdup(app);
+    wchar_t *cmdline_copy = _wcsdup(cmdline);
 
     if (app_copy == NULL || cmdline_copy == NULL)
     {
