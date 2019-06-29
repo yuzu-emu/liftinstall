@@ -17,31 +17,7 @@ function progressSimulation (res) {
   }, 1500)
 }
 
-app.get('/api/attrs', (req, res) => {
-  res.send(
-    `var base_attributes = {"name":"yuzu","target_url":"https://raw.githubusercontent.com/j-selby/test-installer/master/config.linux.v2.toml"};`
-  )
-})
-
-app.get('/api/dark-mode', (req, res) => {
-  res.json(false)
-})
-
-app.get('/api/installation-status', (req, res) => {
-  res.json({
-    database: { packages: [], shortcuts: [] },
-    install_path: null,
-    preexisting_install: false,
-    is_launcher: false,
-    launcher_path: null
-  })
-})
-
-app.get('/api/default-path', (req, res) => {
-  res.json({ path: '/tmp/test/' })
-})
-
-app.get('/api/config', (req, res) => {
+function returnConfig (res) {
   res.json({
     installing_message:
       'Test Banner <strong>Bold</strong>&nbsp;<pre>Code block</pre>&nbsp;<i>Italic</i>&nbsp;<del>Strike</del>',
@@ -73,6 +49,36 @@ app.get('/api/config', (req, res) => {
     ],
     hide_advanced: false
   })
+}
+
+app.get('/api/attrs', (req, res) => {
+  res.send(
+    `var base_attributes = {"name":"yuzu","target_url":"https://raw.githubusercontent.com/j-selby/test-installer/master/config.linux.v2.toml"};`
+  )
+})
+
+app.get('/api/dark-mode', (req, res) => {
+  res.json(false)
+})
+
+app.get('/api/installation-status', (req, res) => {
+  res.json({
+    database: { packages: [], shortcuts: [] },
+    install_path: null,
+    preexisting_install: false,
+    is_launcher: false,
+    launcher_path: null
+  })
+})
+
+app.get('/api/default-path', (req, res) => {
+  res.json({ path: '/tmp/test/' })
+})
+
+app.get('/api/config', (req, res) => {
+  setTimeout(() => {
+    returnConfig(res)
+  }, 3000)
 })
 
 app.post('/api/start-install', (req, res) => {

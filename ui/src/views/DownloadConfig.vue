@@ -3,7 +3,7 @@
             <h4 class="subtitle">Downloading config...</h4>
 
             <br />
-            <progress class="progress is-info is-medium" value="0" max="100">
+            <progress class="progress is-info is-medium" max="100">
                 0%
             </progress>
     </div>

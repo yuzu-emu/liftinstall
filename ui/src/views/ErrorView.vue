@@ -1,25 +1,22 @@
 <template>
-    <div class="column has-padding">
-            <h4 class="subtitle">An error occurred:</h4>
-
-            <pre class="pre-wrap">{{ msg }}</pre>
-
-            <div class="field is-grouped is-right-floating is-bottom-floating">
-                <p class="control">
-                    <a class="button is-primary is-medium" v-if="remaining" v-on:click="go_back">Back</a>
-                </p>
-            </div>
+  <div class="column has-padding">
+    <b-message title="An error occurred" type="is-danger" :closable="false">{{ msg }}</b-message>
+    <div class="field is-grouped is-right-floating is-bottom-floating">
+      <p class="control">
+        <a class="button is-primary is-medium" v-if="remaining" v-on:click="go_back">Back</a>
+      </p>
     </div>
+  </div>
 </template>
 
 <style>
 .pre-wrap {
   /* https://css-tricks.com/snippets/css/make-pre-text-wrap/ */
-  white-space: pre-wrap;       /* css-3 */
-  white-space: -moz-pre-wrap;  /* Mozilla, since 1999 */
-  white-space: -pre-wrap;      /* Opera 4-6 */
-  white-space: -o-pre-wrap;    /* Opera 7 */
-  word-wrap: break-word;       /* Internet Explorer 5.5+ */
+  white-space: pre-wrap; /* css-3 */
+  white-space: -moz-pre-wrap; /* Mozilla, since 1999 */
+  white-space: -pre-wrap; /* Opera 4-6 */
+  white-space: -o-pre-wrap; /* Opera 7 */
+  word-wrap: break-word; /* Internet Explorer 5.5+ */
 }
 </style>
 
