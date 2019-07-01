@@ -1,6 +1,8 @@
 <template>
   <div class="column has-padding">
-    <b-message title="An error occurred" type="is-danger" :closable="false">{{ msg }}</b-message>
+    <b-message title="An error occurred" type="is-danger" :closable="false">
+      <span id="error_msg">{{ msg }}</span>
+    </b-message>
     <div class="field is-grouped is-right-floating is-bottom-floating">
       <p class="control">
         <a class="button is-primary is-medium" v-if="remaining" v-on:click="go_back">Back</a>
@@ -17,6 +19,14 @@
   white-space: -pre-wrap; /* Opera 4-6 */
   white-space: -o-pre-wrap; /* Opera 7 */
   word-wrap: break-word; /* Internet Explorer 5.5+ */
+}
+
+#error_msg {
+    -webkit-user-select: text;
+    -moz-user-select: text;
+    -ms-user-select: text;
+    user-select: text;
+    cursor: text;
 }
 </style>
 
