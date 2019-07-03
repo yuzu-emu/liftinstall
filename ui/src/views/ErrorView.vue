@@ -1,12 +1,12 @@
 <template>
-  <div class="column has-padding">
+  <div class="column" v-bind:class="{ 'has-padding': !$root.$data.metadata.is_launcher }">
     <b-message title="An error occurred" type="is-danger" :closable="false">
-      <span id="error_msg">{{ msg }}</span>
+      <div id="error_msg" v-html="msg"></div>
     </b-message>
     <div class="field is-grouped is-right-floating is-bottom-floating">
       <p class="control">
-        <a class="button is-primary is-medium" v-if="remaining && !is_launcher" v-on:click="go_back">Back</a>
-        <a class="button is-primary is-medium" v-if="is_launcher" v-on:click="exit">Exit</a>
+        <a class="button is-primary is-medium" v-if="remaining && !$root.$data.metadata.is_launcher" v-on:click="go_back">Back</a>
+        <a class="button is-primary is-medium" v-if="$root.$data.metadata.is_launcher" v-on:click="exit">Exit</a>
       </p>
     </div>
   </div>
@@ -36,7 +36,14 @@ export default {
   name: 'ErrorView',
   data: function () {
     return {
-      msg: this.$route.params.msg,
+      // https://stackoverflow.com/questions/6234773/can-i-escape-html-special-chars-in-javascript
+      msg: this.$route.params.msg
+            .replace(/&/g, "&amp;")
+            .replace(/</g, "&lt;")
+            .replace(/>/g, "&gt;")
+            .replace(/"/g, "&quot;")
+            .replace(/'/g, "&#039;")
+            .replace(/\n/g, "<br />"),
       remaining: window.history.length > 1
     }
   },
