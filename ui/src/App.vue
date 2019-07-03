@@ -86,6 +86,11 @@ pre {
     bottom: 0;
 }
 
+.is-top-floating {
+    position: absolute;
+    top: 0;
+}
+
 .is-right-floating {
     position: absolute;
     right: 0;

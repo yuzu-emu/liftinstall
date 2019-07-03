@@ -3,7 +3,7 @@
     <b-message title="An error occurred" type="is-danger" :closable="false">
       <div id="error_msg" v-html="msg"></div>
     </b-message>
-    <div class="field is-grouped is-right-floating is-bottom-floating">
+    <div class="field is-grouped is-right-floating" v-bind:class="{ 'is-bottom-floating': !$root.$data.metadata.is_launcher, 'is-top-floating': $root.$data.metadata.is_launcher }">
       <p class="control">
         <a class="button is-primary is-medium" v-if="remaining && !$root.$data.metadata.is_launcher" v-on:click="go_back">Back</a>
         <a class="button is-primary is-medium" v-if="$root.$data.metadata.is_launcher" v-on:click="exit">Exit</a>
@@ -50,6 +50,9 @@ export default {
   methods: {
     go_back: function () {
       this.$router.go(-1)
+    },
+    exit: function () {
+      this.$root.exit()
     }
   }
 }
