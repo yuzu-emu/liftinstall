@@ -12,6 +12,7 @@ use log::Level;
 enum CallbackType {
     SelectInstallDir { callback_name: String },
     Log { msg: String, kind: String },
+    Test {}
 }
 
 /// Starts the main web UI. Will return when UI is closed.
@@ -58,9 +59,11 @@ pub fn start_ui(app_name: &str, http_address: &str, is_launcher: bool) {
                         _ => Level::Error,
                     };
 
-                    log!(target: "liftinstall::frontend-js", kind, "{}", msg);
+                    log!(target: "liftinstall::frontend::js", kind, "{}", msg);
                 }
+                CallbackType::Test {} => {}
             }
+
             cb_result
         })
         .run()

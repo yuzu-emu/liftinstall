@@ -60,6 +60,8 @@ export default {
       }
 
       this.$root.stream_ajax(targetUrl, function (line) {
+        // On progress line received from server
+
         if (line.hasOwnProperty('Status')) {
           that.progress_message = line.Status[0]
           that.progress = line.Status[1] * 100
@@ -70,14 +72,12 @@ export default {
         }
 
         if (line.hasOwnProperty('Error')) {
-          if (app.metadata.is_launcher) {
-            app.exit()
-          } else {
-            that.failed_with_error = true
-            that.$router.replace({ name: 'showerr', params: { msg: line.Error } })
-          }
+          that.failed_with_error = true
+          that.$router.replace({ name: 'showerr', params: { msg: line.Error } })
         }
       }, function (e) {
+        // On request completed
+
         if (that.is_updater_update) {
           // Continue with what we were doing
           if (app.metadata.is_launcher) {

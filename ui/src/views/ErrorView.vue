@@ -6,7 +6,8 @@
 
             <div class="field is-grouped is-right-floating is-bottom-floating">
                 <p class="control">
-                    <a class="button is-primary is-medium" v-if="remaining" v-on:click="go_back">Back</a>
+                    <a class="button is-primary is-medium" v-if="remaining && !is_launcher" v-on:click="go_back">Back</a>
+                    <a class="button is-primary is-medium" v-if="is_launcher" v-on:click="exit">Exit</a>
                 </p>
             </div>
     </div>

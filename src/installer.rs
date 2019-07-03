@@ -82,8 +82,6 @@ pub struct InstallerFramework {
     // If we just completed an uninstall, and we should clean up after ourselves.
     pub burn_after_exit: bool,
     pub launcher_path: Option<String>,
-
-    attempted_shutdown: bool,
 }
 
 /// Contains basic properties on the status of the session. Subset of InstallationFramework.
@@ -400,27 +398,22 @@ impl InstallerFramework {
 
     /// Shuts down the installer instance.
     pub fn shutdown(&mut self) -> Result<(), String> {
-        if self.attempted_shutdown {
-            return Err("Cannot attempt shutdown twice!".to_string());
-        }
-
-        self.attempted_shutdown = true;
-
         info!("Shutting down installer framework...");
 
-        if let Some(ref v) = self.launcher_path {
+        if let Some(ref v) = self.launcher_path.take() {
             info!("Launching {:?}", v);
 
             Command::new(v)
                 .stdout(Stdio::null())
                 .stderr(Stdio::null())
                 .spawn()
-                .map_err(|x| format!("Unable to start child process: {:?}", x))?;
+                .map_err(|x| format!("Unable to start application: {:?}", x))?;
         }
 
         if self.burn_after_exit {
             info!("Requesting that self be deleted after exit.");
             native::burn_on_exit(&self.base_attributes.name);
+            self.burn_after_exit = false;
         }
 
         Ok(())
@@ -437,7 +430,6 @@ impl InstallerFramework {
             is_launcher: false,
             burn_after_exit: false,
             launcher_path: None,
-            attempted_shutdown: false,
         }
     }
 
@@ -465,7 +457,6 @@ impl InstallerFramework {
             is_launcher: false,
             burn_after_exit: false,
             launcher_path: None,
-            attempted_shutdown: false,
         })
     }
 }
