@@ -1,26 +1,33 @@
 <template>
-    <div class="column has-padding">
-            <h4 class="subtitle">An error occurred:</h4>
-
-            <pre class="pre-wrap">{{ msg }}</pre>
-
-            <div class="field is-grouped is-right-floating is-bottom-floating">
-                <p class="control">
-                    <a class="button is-primary is-medium" v-if="remaining && !is_launcher" v-on:click="go_back">Back</a>
-                    <a class="button is-primary is-medium" v-if="is_launcher" v-on:click="exit">Exit</a>
-                </p>
-            </div>
+  <div class="column has-padding">
+    <b-message title="An error occurred" type="is-danger" :closable="false">
+      <span id="error_msg">{{ msg }}</span>
+    </b-message>
+    <div class="field is-grouped is-right-floating is-bottom-floating">
+      <p class="control">
+        <a class="button is-primary is-medium" v-if="remaining && !is_launcher" v-on:click="go_back">Back</a>
+        <a class="button is-primary is-medium" v-if="is_launcher" v-on:click="exit">Exit</a>
+      </p>
     </div>
+  </div>
 </template>
 
 <style>
 .pre-wrap {
   /* https://css-tricks.com/snippets/css/make-pre-text-wrap/ */
-  white-space: pre-wrap;       /* css-3 */
-  white-space: -moz-pre-wrap;  /* Mozilla, since 1999 */
-  white-space: -pre-wrap;      /* Opera 4-6 */
-  white-space: -o-pre-wrap;    /* Opera 7 */
-  word-wrap: break-word;       /* Internet Explorer 5.5+ */
+  white-space: pre-wrap; /* css-3 */
+  white-space: -moz-pre-wrap; /* Mozilla, since 1999 */
+  white-space: -pre-wrap; /* Opera 4-6 */
+  white-space: -o-pre-wrap; /* Opera 7 */
+  word-wrap: break-word; /* Internet Explorer 5.5+ */
+}
+
+#error_msg {
+    -webkit-user-select: text;
+    -moz-user-select: text;
+    -ms-user-select: text;
+    user-select: text;
+    cursor: text;
 }
 </style>
 

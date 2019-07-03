@@ -2,9 +2,11 @@ import Vue from 'vue'
 import App from './App.vue'
 import router from './router'
 import { ajax, stream_ajax } from './helpers'
+import Buefy from 'buefy'
 import 'buefy/dist/buefy.css'
 
 Vue.config.productionTip = false
+Vue.use(Buefy)
 
 // Borrowed from http://tobyho.com/2012/07/27/taking-over-console-log/
 function intercept (method) {

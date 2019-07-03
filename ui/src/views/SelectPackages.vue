@@ -8,8 +8,9 @@
                     <div class="tile is-child">
                         <div class="box clickable-box" v-on:click.capture.stop="Lpackage.default = !Lpackage.default">
                             <label class="checkbox">
-                                <input type="checkbox" v-model="Lpackage.default" />
-                                {{ Lpackage.name }}
+                                <b-checkbox v-model="Lpackage.default">
+                                  {{ Lpackage.name }}
+                                </b-checkbox>
                                 <span v-if="Lpackage.installed"><i>(installed)</i></span>
                             </label>
                             <p>
