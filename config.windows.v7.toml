@@ -1,6 +1,5 @@
 installing_message = "Reminder: yuzu is an <b>experimental</b> emulator. Stuff will break!"
 hide_advanced = true
-new_tool = "https://github.com/yuzu-emu/liftinstall/releases/download/1.5/yuzu_install.exe"
 
 [[packages]]
 name = "yuzu Nightly"
