@@ -22,6 +22,7 @@ For more detailed instructions, look at the usage documentation above.
 There are are few system dependencies depending on your platform:
 - For all platforms, `cargo` should be available on your PATH. [Rustup](https://rustup.rs/) is the 
   recommended way to achieve this. Stable or Nightly Rust works fine.
+- Have node.js and Yarn available on your PATH (for building UI components, not needed at runtime).
 - For Windows (MSVC), you need Visual Studio installed.
 - For Windows (Mingw), you need `gcc`/`g++` available on the PATH.
 - For Mac, you need Xcode installed, and Clang/etc available on the PATH.
@@ -33,8 +34,8 @@ apt install -y build-essential libwebkit2gtk-4.0-dev libssl-dev
 
 In order to build yourself an installer, as a bare minimum, you need to:
 
-- Add your favicon to `static/favicon.ico`
-- Add your logo to `static/logo.png`
+- Add your favicon to `ui/public/favicon.ico`
+- Add your logo to `ui/src/assets/logo.png`
 - Modify the bootstrap configuration file as needed (`config.PLATFORM.toml`).
 - Have the main configuration file somewhere useful, reachable over HTTP.
 - Run:

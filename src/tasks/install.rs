@@ -26,7 +26,7 @@ impl Task for InstallTask {
         &mut self,
         _: Vec<TaskParamType>,
         _: &mut InstallerFramework,
-        messenger: &Fn(&TaskMessage),
+        messenger: &dyn Fn(&TaskMessage),
     ) -> Result<TaskParamType, String> {
         messenger(&TaskMessage::DisplayMessage("Wrapping up...", 0.0));
         Ok(TaskParamType::None)
