@@ -2,7 +2,7 @@
 
 extern crate mime_guess;
 
-use assets::mime_guess::{get_mime_type, octet_stream};
+use self::mime_guess::{get_mime_type, octet_stream};
 
 macro_rules! include_files_as_assets {
     ( $target_match:expr, $( $file_name:expr ),* ) => {
@@ -34,18 +34,15 @@ pub fn file_from_string(file_path: &str) -> Option<(String, &'static [u8])> {
         file_path,
         "/index.html",
         "/favicon.ico",
-        "/logo.png",
-        "/how-to-open.png",
-        "/css/bulma.min.css",
-        "/css/main.css",
+        "/img/logo.png",
+        "/img/how-to-open.png",
+        "/css/app.css",
+        "/css/chunk-vendors.css",
         "/fonts/roboto-v18-latin-regular.eot",
         "/fonts/roboto-v18-latin-regular.woff",
         "/fonts/roboto-v18-latin-regular.woff2",
-        "/js/vue.min.js",
-        "/js/vue-router.min.js",
-        "/js/helpers.js",
-        "/js/views.js",
-        "/js/main.js"
+        "/js/chunk-vendors.js",
+        "/js/app.js"
     )?;
 
     Some((string_mime, contents))

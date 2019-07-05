@@ -12,7 +12,7 @@ use tasks::resolver::ResolvePackageTask;
 
 use http::stream_file;
 
-use number_prefix::{decimal_prefix, Prefixed, Standalone};
+use number_prefix::{NumberPrefix, Prefixed, Standalone};
 
 use logging::LoggingErrors;
 
@@ -25,7 +25,7 @@ impl Task for DownloadPackageTask {
         &mut self,
         mut input: Vec<TaskParamType>,
         context: &mut InstallerFramework,
-        messenger: &Fn(&TaskMessage),
+        messenger: &dyn Fn(&TaskMessage),
     ) -> Result<TaskParamType, String> {
         assert_eq!(input.len(), 1);
 
@@ -68,11 +68,11 @@ impl Task for DownloadPackageTask {
             };
 
             // Pretty print data volumes
-            let pretty_current = match decimal_prefix(downloaded as f64) {
+            let pretty_current = match NumberPrefix::decimal(downloaded as f64) {
                 Standalone(bytes) => format!("{} bytes", bytes),
                 Prefixed(prefix, n) => format!("{:.0} {}B", n, prefix),
             };
-            let pretty_total = match decimal_prefix(size as f64) {
+            let pretty_total = match NumberPrefix::decimal(size as f64) {
                 Standalone(bytes) => format!("{} bytes", bytes),
                 Prefixed(prefix, n) => format!("{:.0} {}B", n, prefix),
             };
