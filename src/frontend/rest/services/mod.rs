@@ -21,6 +21,7 @@ use futures::future::Future as _;
 use futures::sink::Sink;
 
 mod attributes;
+mod authentication;
 mod config;
 mod default_path;
 mod dark_mode;
@@ -137,6 +138,7 @@ impl Service for WebService {
             (Method::Get, "/api/exit") => exit::handle(self, req),
             (Method::Get, "/api/packages") => packages::handle(self, req),
             (Method::Get, "/api/installation-status") => installation_status::handle(self, req),
+            (Method::Post, "/api/check-auth") => authentication::handle(self, req),
             (Method::Post, "/api/start-install") => install::handle(self, req),
             (Method::Post, "/api/uninstall") => uninstall::handle(self, req),
             (Method::Post, "/api/update-updater") => update_updater::handle(self, req),

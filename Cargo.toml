@@ -38,6 +38,11 @@ chrono = "0.4.6"
 
 clap = "2.32.0"
 
+# used to open a link to the users default browser
+webbrowser = "0.5.2"
+# used in JWT based package authentication
+jsonwebtoken = "6"
+
 [build-dependencies]
 walkdir = "2.2.7"
 serde = "1.0.89"

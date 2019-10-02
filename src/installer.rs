@@ -53,11 +53,20 @@ pub enum InstallMessage {
     EOF,
 }
 
+#[derive(Serialize, Deserialize, Clone)]
+pub struct Credentials {
+    #[serde(default)]
+    pub username: String,
+    #[serde(default)]
+    pub token: String,
+}
+
 /// Metadata about the current installation itself.
 #[derive(Serialize, Deserialize, Clone)]
 pub struct InstallationDatabase {
     pub packages: Vec<LocalInstallation>,
     pub shortcuts: Vec<String>,
+    pub credentials: Credentials,
 }
 
 impl InstallationDatabase {
@@ -66,6 +75,7 @@ impl InstallationDatabase {
         InstallationDatabase {
             packages: Vec::new(),
             shortcuts: Vec::new(),
+            credentials: Credentials{username: String::new(), token: String::new()},
         }
     }
 }

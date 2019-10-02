@@ -77,6 +77,7 @@ export default {
       }))
     },
     install: function () {
+      // TODO route instead to an authentication endpoint. if this package needs auth, then call the backend and route to the auth page
       this.$router.push('/install/regular')
     },
     go_back: function () {

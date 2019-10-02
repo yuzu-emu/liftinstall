@@ -47,6 +47,8 @@ extern crate slug;
 #[cfg(not(windows))]
 extern crate sysinfo;
 
+extern crate jsonwebtoken as jwt;
+
 mod archives;
 mod config;
 mod frontend;
