@@ -98,6 +98,7 @@ export default {
                 params: {
                   uninstall: true,
                   update: that.is_update,
+                  migrate: false,
                   installed: that.packages_installed
                 } })
             } else {
@@ -105,6 +106,7 @@ export default {
                 params: {
                   uninstall: false,
                   update: that.is_update,
+                  migrate: false,
                   installed: that.packages_installed
                 } })
             }

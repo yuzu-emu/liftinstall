@@ -42,7 +42,9 @@ pub fn file_from_string(file_path: &str) -> Option<(String, &'static [u8])> {
         "/fonts/roboto-v18-latin-regular.woff",
         "/fonts/roboto-v18-latin-regular.woff2",
         "/js/chunk-vendors.js",
-        "/js/app.js"
+        "/js/chunk-vendors.js.map",
+        "/js/app.js",
+        "/js/app.js.map"
     )?;
 
     Some((string_mime, contents))
