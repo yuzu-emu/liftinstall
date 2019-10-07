@@ -1,6 +1,7 @@
 import Vue from 'vue'
 import Router from 'vue-router'
 import DownloadConfig from './views/DownloadConfig.vue'
+import MigrateView from './views/MigrateView.vue'
 import SelectPackages from './views/SelectPackages.vue'
 import ErrorView from './views/ErrorView.vue'
 import InstallPackages from './views/InstallPackages.vue'
@@ -15,6 +16,11 @@ export default new Router({
       path: '/config',
       name: 'config',
       component: DownloadConfig
+    },
+    {
+      path: '/migrate',
+      name: 'migrate',
+      component: MigrateView
     },
     {
       path: '/packages',
@@ -32,7 +38,7 @@ export default new Router({
       component: ErrorView
     },
     {
-      path: '/complete/:uninstall/:update/:packages_installed',
+      path: '/complete/:uninstall/:update/:migrate/:packages_installed',
       name: 'complete',
       component: CompleteView
     },

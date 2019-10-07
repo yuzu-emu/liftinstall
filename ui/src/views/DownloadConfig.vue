@@ -71,11 +71,8 @@ export default {
           }
         }
 
-        if (app.metadata.is_launcher) {
-          this.$router.replace('/install/regular')
-        } else {
-          this.$router.replace('/modify')
-        }
+        this.$router.replace({ name: 'migrate',
+          params: { next: app.metadata.is_launcher ? '/install/regular' : '/modify' } })
       } else {
         for (var x = 0; x < app.config.packages.length; x++) {
           app.config.packages[x].installed = false
@@ -89,7 +86,8 @@ export default {
           }
         })
 
-        this.$router.replace('/packages')
+        this.$router.replace({ name: 'migrate',
+          params: { next: '/packages' } })
       }
     }
   }
