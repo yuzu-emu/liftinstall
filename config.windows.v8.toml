@@ -7,7 +7,7 @@ description = "Includes frequent updates to yuzu with all the latest reviewed an
 default = true
     [packages.source]
     name = "github"
-    match = "^yuzu-windows-msvc-[0-9]*-[0-9a-f]*.zip$"
+    match = "^yuzu-windows-msvc-[0-9]*-[0-9a-f]*.tar.xz$"
         [packages.source.config]
         repo = "yuzu-emu/yuzu-mainline"
     [[packages.shortcuts]]
