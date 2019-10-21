@@ -54,7 +54,7 @@ impl Task for DownloadPackageTask {
         let mut downloaded = 0;
         let mut data_storage: Vec<u8> = Vec::new();
 
-        stream_file(&file.url, |data, size| {
+        stream_file(&file.url, context.authorization_token.clone(), |data, size| {
             {
                 data_storage.extend_from_slice(&data);
             }

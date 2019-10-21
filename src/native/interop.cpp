@@ -45,7 +45,7 @@ extern "C" int saveShortcut(
     const wchar_t *args,
     const wchar_t *workingDir)
 {
-    char *errStr = NULL;
+    const char *errStr = NULL;
     HRESULT h;
     IShellLink *shellLink = NULL;
     IPersistFile *persistFile = NULL;

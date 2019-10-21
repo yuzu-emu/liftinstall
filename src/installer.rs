@@ -92,6 +92,7 @@ pub struct InstallerFramework {
     // If we just completed an uninstall, and we should clean up after ourselves.
     pub burn_after_exit: bool,
     pub launcher_path: Option<String>,
+    pub authorization_token: Option<String>,
 }
 
 /// Contains basic properties on the status of the session. Subset of InstallationFramework.
@@ -262,7 +263,7 @@ impl InstallerFramework {
         let mut downloaded = 0;
         let mut data_storage: Vec<u8> = Vec::new();
 
-        http::stream_file(tool, |data, size| {
+        http::stream_file(tool, None, |data, size| {
             {
                 data_storage.extend_from_slice(&data);
             }
@@ -440,6 +441,7 @@ impl InstallerFramework {
             is_launcher: false,
             burn_after_exit: false,
             launcher_path: None,
+            authorization_token: None,
         }
     }
 
@@ -467,6 +469,7 @@ impl InstallerFramework {
             is_launcher: false,
             burn_after_exit: false,
             launcher_path: None,
+            authorization_token: None,
         })
     }
 }

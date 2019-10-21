@@ -7,6 +7,7 @@ import ErrorView from './views/ErrorView.vue'
 import InstallPackages from './views/InstallPackages.vue'
 import CompleteView from './views/CompleteView.vue'
 import ModifyView from './views/ModifyView.vue'
+import AuthenticationView from './views/AuthenticationView.vue'
 
 Vue.use(Router)
 
@@ -46,6 +47,11 @@ export default new Router({
       path: '/modify',
       name: 'modify',
       component: ModifyView
+    },
+    {
+      path: '/authentication',
+      name: 'authentication',
+      component: AuthenticationView
     },
     {
       path: '/',

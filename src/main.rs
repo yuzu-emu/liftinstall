@@ -49,6 +49,8 @@ extern crate sysinfo;
 
 extern crate jsonwebtoken as jwt;
 
+extern crate base64;
+
 mod archives;
 mod config;
 mod frontend;
