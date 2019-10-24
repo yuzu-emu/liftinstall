@@ -12,5 +12,5 @@ default = true
         repo = "yuzu-emu/yuzu-mainline"
     [[packages.shortcuts]]
     name = "yuzu"
-    relative_path = "yuzu-windows-msvc-mainline/yuzu.exe"
+    relative_path = "yuzu-windows-msvc/yuzu.exe"
     description = "Launch yuzu"
