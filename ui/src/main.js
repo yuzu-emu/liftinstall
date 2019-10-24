@@ -132,8 +132,8 @@ var app = new Vue({
             that.is_subscribed = true;
             that.has_reward_tier = true;
           } else {
-            that.is_linked = that.jwt_token.isPatreonAccountLinked;
-            that.is_subscribed = that.jwt_token.isPatreonSubscriptionActive;
+            that.is_linked = that.jwt_token.IsPatreonAccountLinked;
+            that.is_subscribed = that.jwt_token.IsPatreonSubscriptionActive;
             that.has_reward_tier = that.jwt_token.releaseChannels.indexOf("early-release") > -1;
           }
         }

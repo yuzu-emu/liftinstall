@@ -84,7 +84,7 @@ export default {
       return this.verification_opened && this.$root.is_linked && !this.$root.is_subscribed;
     },
     tier_not_selected: function() {
-      return this.verification_opened && this.$root.is_subscribed && !this.$root.has_reward_tier;
+      return this.verification_opened && this.$root.is_linked && this.$root.is_subscribed && !this.$root.has_reward_tier;
     }
   },
   methods: {
