@@ -6,7 +6,7 @@
     </b-message>
     <p>
       Before you can install this Early Access, you need to verify your account.
-      <a v-on:click="launch_browser('https://profile.yuzu-emu.org/external/patreon/connect/')">Click here to link your yuzu-emu.org account</a>
+      <a v-on:click="launch_browser('https://profile.yuzu-emu.org/')">Click here to link your yuzu-emu.org account</a>
       and paste the token below.
     </p>
 
