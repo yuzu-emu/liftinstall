@@ -21,7 +21,7 @@ use futures::future::Future as _;
 use futures::sink::Sink;
 
 mod attributes;
-mod authentication;
+pub mod authentication;
 mod browser;
 mod config;
 mod default_path;

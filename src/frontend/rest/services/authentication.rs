@@ -1,5 +1,5 @@
 
-use http::build_async_client;
+use http::{build_client, build_async_client};
 
 use hyper::header::{ContentLength, ContentType};
 use reqwest::header::{USER_AGENT};
@@ -12,49 +12,130 @@ use logging::LoggingErrors;
 use url::form_urlencoded;
 use std::collections::HashMap;
 use std::sync::Arc;
+use config::JWTValidation;
 
-/// claims struct, it needs to derive `Serialize` and/or `Deserialize`
 #[derive(Debug, Serialize, Deserialize)]
-struct JWTClaims {
-    sub: String,
-    iss: String,
-    aud: String,
-    exp: usize,
-    #[serde(default)]
-    roles: Vec<String>,
-    #[serde(rename = "releaseChannels", default)]
-    channels: Vec<String>,
-    #[serde(rename = "IsPatreonAccountLinked")]
-    is_linked: bool,
-    #[serde(rename = "IsPatreonSubscriptionActive")]
-    is_subscribed: bool,
+struct Auth {
+    username: String,
+    token: String,
+    jwt_token: JWTClaims,
 }
 
-fn get_text(future: impl Future<Item = reqwest::async::Response, Error = reqwest::Error>) -> impl Future<Item = String, Error = Response> {
-    future.map(|mut response| {
-            // Get the body of the response
+/// claims struct, it needs to derive `Serialize` and/or `Deserialize`
+#[derive(Debug, Serialize, Deserialize, Clone)]
+pub struct JWTClaims {
+    pub sub: String,
+    pub iss: String,
+    pub aud: String,
+    pub exp: usize,
+    #[serde(default)]
+    pub roles: Vec<String>,
+    #[serde(rename = "releaseChannels", default)]
+    pub channels: Vec<String>,
+    #[serde(rename = "isPatreonAccountLinked")]
+    pub is_linked: bool,
+    #[serde(rename = "isPatreonSubscriptionActive")]
+    pub is_subscribed: bool,
+}
+
+/// Calls the given server to obtain a JWT token and returns a Future<String> with the response
+pub fn authenticate_async(url: String, username: String, token: String)
+    -> Box<dyn futures::Future<Item = String, Error = String>> {
+
+    // Build the HTTP client up
+    let client = match build_async_client() {
+        Ok(v) => v,
+        Err(_) => {
+            return Box::new(futures::future::err("Unable to build async web client".to_string()));
+        },
+    };
+
+    Box::new(client.post(&url)
+        .header(USER_AGENT, "liftinstall (j-selby)")
+        .header("X-USERNAME", username.clone())
+        .header("X-TOKEN", token.clone())
+        .send()
+        .map_err(|err| {
+            format!("stream error {:?}, client: {:?}, http: {:?}, redirect: {:?}, serialization: {:?}, timeout: {:?}, server: {:?}",
+                    err, err.is_client_error(), err.is_http(), err.is_redirect(),
+                    err.is_serialization(), err.is_timeout(), err.is_server_error())
+        })
+        .map(|mut response| {
             match response.status() {
                 reqwest::StatusCode::OK =>
                     Ok(response.text()
                         .map_err(|e| {
-                            error!("Error while converting the response to text {:?}", e);
-                            Response::new()
-                                .with_status(hyper::StatusCode::InternalServerError)
+                            format!("Error while converting the response to text {:?}", e)
                         })),
                 _ => {
-                    error!("Error wrong response code from server {:?}", response.status());
-                    Err(Response::new()
-                        .with_status(hyper::StatusCode::InternalServerError))
+                    Err(format!("Error wrong response code from server {:?}", response.status()))
                 }
             }
         })
-        .map_err(|err| {
-            error!("Error cannot get text on errored stream {:?}", err);
-            Response::new()
-                .with_status(hyper::StatusCode::InternalServerError)
-        })
         .and_then(|x| x)
         .flatten()
+    )
+}
+
+pub fn authenticate_sync(url: String, username: String, token: String)
+                         -> Result<String, String> {
+
+    // Build the HTTP client up
+    let client = build_client()?;
+
+    let mut response = client.post(&url)
+        .header(USER_AGENT, "liftinstall (j-selby)")
+        .header("X-USERNAME", username.clone())
+        .header("X-TOKEN", token.clone())
+        .send()
+        .map_err(|err| {
+            format!("stream error {:?}, client: {:?}, http: {:?}, redirect: {:?}, serialization: {:?}, timeout: {:?}, server: {:?}",
+                    err, err.is_client_error(), err.is_http(), err.is_redirect(),
+                    err.is_serialization(), err.is_timeout(), err.is_server_error())
+        })?;
+
+    match response.status() {
+        reqwest::StatusCode::OK =>
+            Ok(response.text()
+                .map_err(|e| {
+                    format!("Error while converting the response to text {:?}", e)
+                })?),
+        _ => {
+            Err(format!("Error wrong response code from server {:?}", response.status()))
+        }
+    }
+}
+
+pub fn validate_token(body: String, pub_key_base64: String, validation: Option<JWTValidation>) -> Result<JWTClaims, String> {
+    // Get the public key for this authentication url
+    let pub_key = if pub_key_base64.is_empty() {
+        vec![]
+    } else {
+        match base64::decode(&pub_key_base64) {
+            Ok(v) => v,
+            Err(err) => {
+                return Err(format!("Configured public key was not empty and did not decode as base64 {:?}", err));
+            },
+        }
+    };
+
+    // Configure validation for audience and issuer if the configuration provides it
+    let validation = match validation {
+        Some(v) => {
+            let mut valid = Validation::new(Algorithm::RS256);
+            valid.iss = v.iss;
+            if v.aud.is_some() {
+                valid.set_audience(&v.aud.unwrap());
+            }
+            valid
+        }
+        None => Validation::default()
+    };
+
+    // Verify the JWT token
+    decode::<JWTClaims>(&body, pub_key.as_slice(), &validation)
+        .map(|tok| tok.claims)
+        .map_err(|err| format!("Error while decoding the JWT. error: {:?} jwt: {:?}", err, body))
 }
 
 pub fn handle(service: &WebService, _req: Request) -> InternalFuture {
@@ -93,87 +174,53 @@ pub fn handle(service: &WebService, _req: Request) -> InternalFuture {
                     (credentials.username.clone(), credentials.token.clone())
                 }
             };
+            // second copy of the credentials so we can move them into a different closure
+            let (username_clone, token_clone) = (username.clone(), token.clone());
 
             let authentication = config.authentication.unwrap();
-
-            // Get the public key for this authentication url
-            let pub_key = if authentication.pub_key_base64.is_empty() {
-                vec![]
-            } else {
-                match base64::decode(&authentication.pub_key_base64) {
-                    Ok(v) => v,
-                    Err(err) => {
-                        error!("Configured public key was not empty and did not decode as base64 {:?}", err);
-                        return default_future(Response::new().with_status(hyper::StatusCode::InternalServerError));
-                    },
-                }
-            };
-
-            // Build the HTTP client up
-            let client = match build_async_client() {
-                Ok(v) => v,
-                Err(_) => {
-                    return default_future(Response::new().with_status(hyper::StatusCode::InternalServerError));
-                },
-            };
+            let auth_url = authentication.auth_url.clone();
+            let pub_key_base64 = authentication.pub_key_base64.clone();
+            let validation = authentication.validation.clone();
 
             // call the authentication URL to see if we are authenticated
-            Box::new(get_text(
-                    client.post(&authentication.auth_url)
-                    .header(USER_AGENT, "liftinstall (j-selby)")
-                    .header("X-USERNAME", username.clone())
-                    .header("X-TOKEN", token.clone())
-                    .send()
-                ).map(move |body| {
-                    // Configure validation for audience and issuer if the configuration provides it
-                    let validation = match authentication.validation {
-                        Some(v) => {
-                            let mut valid = Validation::new(Algorithm::RS256);
-                            valid.iss = v.iss;
-                            if v.aud.is_some() {
-                                valid.set_audience(&v.aud.unwrap());
-                            }
-                            valid
-                        }
-                        None => Validation::default()
+            Box::new(authenticate_async(auth_url, username.clone(), token.clone())
+                .map(|body| {
+                    validate_token(body, pub_key_base64, validation)
+                })
+                .and_then(|res| res)
+                .map(move |claims| {
+                    let out = Auth {
+                        username: username_clone,
+                        token: token_clone,
+                        jwt_token: claims.clone(),
                     };
-
-                    // Verify the JWT token
-                    let tok = match decode::<JWTClaims>(&body, pub_key.as_slice(), &validation) {
-                        Ok(v) => v,
-                        Err(v) => {
-                            error!("Error while decoding the JWT. error: {:?} str: {:?}", v, &body);
-                            return Err(Response::new().with_status(hyper::StatusCode::InternalServerError));
-                        },
-                    };
-
-                    {
-                        // Store the validated username and password into the installer database
-                        let mut framework = write_cred_fw.write().log_expect("InstallerFramework has been dirtied");
-                        framework.database.credentials.username = username.clone();
-                        framework.database.credentials.token = token.clone();
-                        // And store the JWT token temporarily in the
-                        framework.authorization_token = Some(body.clone());
-                    }
-
                     // Convert the json to a string and return the json token
-                    match serde_json::to_string(&tok.claims) {
+                    match serde_json::to_string(&out) {
                         Ok(v) => Ok(v),
                         Err(e) => {
-                            error!("Error while converting the claims to JSON string: {:?}", e);
-                            Err(Response::new().with_status(hyper::StatusCode::InternalServerError))
+                            Err(format!("Error while converting the claims to JSON string: {:?}", e))
                         }
                     }
                 })
                 .and_then(|res| res)
-                .map(|out| {
+                .map(move |json| {
+                    {
+                        // Store the validated username and password into the installer database
+                        let mut framework = write_cred_fw.write().log_expect("InstallerFramework has been dirtied");
+                        framework.database.credentials.username = username;
+                        framework.database.credentials.token = token;
+                    }
+
                     // Finally return the JSON with the response
                     info!("successfully verified username and token");
                     Response::new()
-                        .with_header(ContentLength(out.len() as u64))
+                        .with_header(ContentLength(json.len() as u64))
                         .with_header(ContentType::json())
                         .with_status(hyper::StatusCode::Ok)
-                        .with_body(out)
+                        .with_body(json)
+                })
+                .map_err(|err| {
+                    Response::new().with_status(hyper::StatusCode::InternalServerError)
                 })
                 .or_else(|err| {
                     // Convert the Err value into an Ok value since the error code from this HTTP request is an Ok(response)

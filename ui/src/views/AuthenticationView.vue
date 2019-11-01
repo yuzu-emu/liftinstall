@@ -6,7 +6,7 @@
     </b-message>
     <p>
       Before you can install this Early Access, you need to verify your account.
-      <a v-on:click="launch_browser('https://yuzu-emu.org/')">Click here to link your yuzu-emu.org account</a>
+      <a v-on:click="launch_browser('https://profile.yuzu-emu.org/external/patreon/connect/')">Click here to link your yuzu-emu.org account</a>
       and paste the token below.
     </p>
 
@@ -30,17 +30,17 @@
 
     <b-message type="is-danger" :active.sync="unlinked_patreon">
       Your credentials are valid, but you still need to link your patreon!
-      If this is an error, then <a v-on:click="launch_browser('https://yuzu-emu.org/')">click here to link your yuzu-emu.org account</a>
+      If this is an error, then <a v-on:click="launch_browser('https://profile.yuzu-emu.org/external/patreon/connect/')">click here to link your yuzu-emu.org account</a>
     </b-message>
 
     <b-message type="is-danger" :active.sync="no_subscription">
       Your patreon is linked, but you are not a current subscriber.
-      <a v-on:click="launch_browser('https://patreon.com/')">Log into your patreon account</a> and support the project!
+      <a v-on:click="launch_browser('https://profile.yuzu-emu.org/')">Log into your patreon account</a> and support the project!
     </b-message>
 
     <b-message type="is-danger" :active.sync="tier_not_selected">
       Your patreon is linked, and you are supporting the project, but you must first join the Early Access reward tier!
-      <a v-on:click="launch_browser('https://patreon.com/')">Log into your patreon account</a> and choose to back the Early Access reward tier.
+      <a v-on:click="launch_browser('https://profile.yuzu-emu.org/')">Log into your patreon account</a> and choose to back the Early Access reward tier.
     </b-message>
 
     <div class="is-left-floating is-bottom-floating">

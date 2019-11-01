@@ -50,6 +50,7 @@ pub enum InstallMessage {
     Status(String, f64),
     PackageInstalled,
     Error(String),
+    AuthorizationRequired(String),
     EOF,
 }
 
@@ -92,7 +93,6 @@ pub struct InstallerFramework {
     // If we just completed an uninstall, and we should clean up after ourselves.
     pub burn_after_exit: bool,
     pub launcher_path: Option<String>,
-    pub authorization_token: Option<String>,
 }
 
 /// Contains basic properties on the status of the session. Subset of InstallationFramework.
@@ -122,6 +122,11 @@ macro_rules! declare_messenger_callback {
             TaskMessage::DisplayMessage(msg, progress) => {
                 if let Err(v) = $target.send(InstallMessage::Status(msg.to_string(), progress as _))
                 {
+                    error!("Failed to submit queue message: {:?}", v);
+                }
+            }
+            TaskMessage::AuthorizationRequired(msg) => {
+                if let Err(v) = $target.send(InstallMessage::AuthorizationRequired(msg.to_string())) {
                     error!("Failed to submit queue message: {:?}", v);
                 }
             }
@@ -441,7 +446,6 @@ impl InstallerFramework {
             is_launcher: false,
             burn_after_exit: false,
             launcher_path: None,
-            authorization_token: None,
         }
     }
 
@@ -469,7 +473,6 @@ impl InstallerFramework {
             is_launcher: false,
             burn_after_exit: false,
             launcher_path: None,
-            authorization_token: None,
         })
     }
 }

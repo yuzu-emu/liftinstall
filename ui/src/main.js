@@ -123,7 +123,9 @@ var app = new Vue({
       var app = this.$root;
 
       app.ajax('/api/check-auth', function (auth) {
-        that.jwt_token = auth;
+        app.$data.username = auth.username;
+        app.$data.token = auth.token;
+        that.jwt_token = auth.jwt_token;
         that.is_authenticated = Object.keys(that.jwt_token).length !== 0 && that.jwt_token.constructor === Object;
         if (that.is_authenticated) {
           // Give all permissions to vip roles
@@ -132,9 +134,9 @@ var app = new Vue({
             that.is_subscribed = true;
             that.has_reward_tier = true;
           } else {
-            that.is_linked = that.jwt_token.IsPatreonAccountLinked;
-            that.is_subscribed = that.jwt_token.IsPatreonSubscriptionActive;
-            that.has_reward_tier = that.jwt_token.releaseChannels.indexOf("early-release") > -1;
+            that.is_linked = that.jwt_token.isPatreonAccountLinked;
+            that.is_subscribed = that.jwt_token.isPatreonSubscriptionActive;
+            that.has_reward_tier = that.jwt_token.releaseChannels.indexOf("early-access") > -1;
           }
         }
         if (success) {

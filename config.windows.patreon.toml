@@ -28,7 +28,7 @@ default = true
 
 [[packages]]
 name = "yuzu Early Access"
-description = "The build for all those epic Chads out there who didn't have to steal 5 dollar from their mom to pay for this."
+description = "Bonus preview release for project supporters. Thanks for your support!"
 # Displayed when the package has no authentication for the user
 need_authentication_description = "Click here to sign in with your yuzu account for Early Access"
 # Displayed when the package has an authentication, but the user has not linked their account

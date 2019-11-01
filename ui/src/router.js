@@ -8,6 +8,7 @@ import InstallPackages from './views/InstallPackages.vue'
 import CompleteView from './views/CompleteView.vue'
 import ModifyView from './views/ModifyView.vue'
 import AuthenticationView from './views/AuthenticationView.vue'
+import ReAuthenticationView from './views/ReAuthenticationView.vue'
 
 Vue.use(Router)
 
@@ -52,6 +53,11 @@ export default new Router({
       path: '/authentication',
       name: 'authentication',
       component: AuthenticationView
+    },
+    {
+      path: '/reauthenticate',
+      name: 'reauthenticate',
+      component: ReAuthenticationView
     },
     {
       path: '/',

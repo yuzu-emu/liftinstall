@@ -25,6 +25,7 @@ export default {
       is_updater_update: false,
       is_update: false,
       failed_with_error: false,
+      authorization_required: false,
       packages_installed: 0
     }
   },
@@ -41,10 +42,12 @@ export default {
       var app = this.$root
 
       var results = {}
+      var requires_authorization = false;
 
       for (var package_index = 0; package_index < app.config.packages.length; package_index++) {
         var current_package = app.config.packages[package_index]
         if (current_package.default != null) {
+          requires_authorization |= current_package.requires_authorization;
           results[current_package.name] = current_package.default
         }
       }
@@ -71,6 +74,10 @@ export default {
           that.packages_installed += 1
         }
 
+        if (line.hasOwnProperty('AuthorizationRequired')) {
+          that.authorization_required = true
+        }
+
         if (line.hasOwnProperty('Error')) {
           that.failed_with_error = true
           that.$router.replace({ name: 'showerr', params: { msg: line.Error } })
@@ -90,7 +97,9 @@ export default {
             }
           }
         } else {
-          if (app.metadata.is_launcher) {
+          if (that.authorization_required) {
+            that.$router.push('/reauthenticate')
+          } else if (app.metadata.is_launcher) {
             app.exit()
           } else if (!that.failed_with_error) {
             if (that.is_uninstall) {
