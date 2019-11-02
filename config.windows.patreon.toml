@@ -38,6 +38,8 @@ need_subscription_description = "You are signed in, but you need to link your Pa
 # Displayed when the package has an authentication, but the user has not linked their account
 need_reward_tier_description = "You are signed in, but are not backing an eligible reward tier! Click here for more details"
 requires_authorization = true
+# puts a "new" ribbon the package select
+is_new = true
     [packages.source]
     name = "patreon"
     match = "^yuzu-windows-msvc-[0-9]*-[0-9a-f]*.tar.xz$"
