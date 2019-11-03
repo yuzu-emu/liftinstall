@@ -39,6 +39,8 @@ pub struct PackageDescription {
     #[serde(default)]
     pub requires_authorization: Option<bool>,
     #[serde(default)]
+    pub is_new: Option<bool>,
+    #[serde(default)]
     pub need_authentication_description: Option<String>,
     #[serde(default)]
     pub need_link_description: Option<String>,

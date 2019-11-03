@@ -5,11 +5,14 @@
       When you are done, enter the username and token below.
     </b-message>
     <p>
-      Before you can install this Early Access, you need to verify your account.
-      <a v-on:click="launch_browser('https://profile.yuzu-emu.org/')">Click here to link your yuzu-emu.org account</a>
-      and paste the token below.
-    </p>
+      The <strong>Early Access</strong> release channel lets you try out the latest experimental features and fixes, before they are merged into yuzu. This channel includes all regular yuzu daily updates, plus these exclusive features.
 
+      To be an Early Access member, you must be a Patreon Early Access Subscriber.
+      <br><br>
+      If you are a subscriber, <a v-on:click="launch_browser('https://profile.yuzu-emu.org/')">click here to link your yuzu-emu.org account</a>
+      <br><br>
+      If you are not already a subscriber, <a v-on:click="launch_browser('https://www.patreon.com/join/yuzuteam/checkout?rid=2822069')">click here to become one</a>
+    </p>
     <br>
 
     <div class="control">
@@ -30,17 +33,17 @@
 
     <b-message type="is-danger" :active.sync="unlinked_patreon">
       Your credentials are valid, but you still need to link your patreon!
-      If this is an error, then <a v-on:click="launch_browser('https://profile.yuzu-emu.org/external/patreon/connect/')">click here to link your yuzu-emu.org account</a>
+      If this is an error, then <a v-on:click="launch_browser('https://profile.yuzu-emu.org/')">click here to link your yuzu-emu.org account</a>
     </b-message>
 
     <b-message type="is-danger" :active.sync="no_subscription">
-      Your patreon is linked, but you are not a current subscriber.
-      <a v-on:click="launch_browser('https://profile.yuzu-emu.org/')">Log into your patreon account</a> and support the project!
+      Your patreon is linked, but you are not a current subscriber!
+      <a v-on:click="launch_browser('https://www.patreon.com/join/yuzuteam/checkout?rid=2822069')">Log into your patreon account</a> and support the project!
     </b-message>
 
     <b-message type="is-danger" :active.sync="tier_not_selected">
       Your patreon is linked, and you are supporting the project, but you must first join the Early Access reward tier!
-      <a v-on:click="launch_browser('https://profile.yuzu-emu.org/')">Log into your patreon account</a> and choose to back the Early Access reward tier.
+      <a v-on:click="launch_browser('https://www.patreon.com/join/yuzuteam/checkout?rid=2822069')">Log into your patreon account</a> and choose to back the Early Access reward tier.
     </b-message>
 
     <div class="is-left-floating is-bottom-floating">

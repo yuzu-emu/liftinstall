@@ -17,7 +17,7 @@ enum CallbackType {
 
 /// Starts the main web UI. Will return when UI is closed.
 pub fn start_ui(app_name: &str, http_address: &str, is_launcher: bool) {
-    let size = (1024, 500);
+    let size = (1024, 550);
 
     info!("Spawning web view instance");
 

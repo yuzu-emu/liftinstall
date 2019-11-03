@@ -18,7 +18,7 @@ use config::JWTValidation;
 struct Auth {
     username: String,
     token: String,
-    jwt_token: JWTClaims,
+    jwt_token: Option<JWTClaims>,
 }
 
 /// claims struct, it needs to derive `Serialize` and/or `Deserialize`
@@ -192,7 +192,7 @@ pub fn handle(service: &WebService, _req: Request) -> InternalFuture {
                     let out = Auth {
                         username: username_clone,
                         token: token_clone,
-                        jwt_token: claims.clone(),
+                        jwt_token: Some(claims.clone()),
                     };
                     // Convert the json to a string and return the json token
                     match serde_json::to_string(&out) {
