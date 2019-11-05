@@ -4,15 +4,16 @@
       Page opened! Check your default browser for the page, and follow the instructions there to link your patreon account.
       When you are done, enter the username and token below.
     </b-message>
-    <p>
+    <b-message type="is-info" :active.sync="show_header">
       The <strong>Early Access</strong> release channel lets you try out the latest experimental features and fixes, before they are merged into yuzu. This channel includes all regular yuzu daily updates, plus these exclusive features.
 
       To be an Early Access member, you must be a Patreon Early Access Subscriber.
-      <br><br>
-      If you are a subscriber, <a v-on:click="launch_browser('https://profile.yuzu-emu.org/')">click here to link your yuzu-emu.org account</a>
-      <br><br>
-      If you are not already a subscriber, <a v-on:click="launch_browser('https://www.patreon.com/join/yuzuteam/checkout?rid=2822069')">click here to become one</a>
-    </p>
+    </b-message>
+    <div>
+    If you are a subscriber, <a v-on:click="launch_browser('https://profile.yuzu-emu.org/')">click here to link your yuzu-emu.org account</a>
+    <br>
+    If you are not already a subscriber, <a v-on:click="launch_browser('https://www.patreon.com/join/yuzuteam/checkout?rid=2822069')">click here to become one</a>
+    </div>
     <br>
 
     <div class="control">
@@ -77,6 +78,9 @@ export default {
     }
   },
   computed: {
+    show_header: function() {
+      return !this.browser_opened && !this.verification_opened;
+    },
     invalid_login: function() {
       return this.verification_opened && !this.$root.is_authenticated;
     },
