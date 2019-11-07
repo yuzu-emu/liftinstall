@@ -47,6 +47,6 @@ is_new = true
         repo = "earlyaccess"
     [[packages.shortcuts]]
     name = "yuzu Early Access"
-    relative_path = "yuzu-windows-msvc/yuzu.exe"
+    relative_path = "yuzu-windows-msvc-patreon/yuzu.exe"
     description = "Launch yuzu Early Access"
 

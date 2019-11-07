@@ -102,11 +102,14 @@ export default {
   name: 'SelectPackages',
   created: function() {
     if (this.$root.$data.has_reward_tier) {
-      for (var package_index = 0; package_index < app.config.packages.length; package_index++) {
-        var current_package = app.config.packages[package_index];
+      for (let package_index = 0; package_index < this.$root.config.packages.length; package_index++) {
+        let current_package = this.$root.config.packages[package_index];
         // If they are authorized, make the packages that require authorization default
         if (current_package.requires_authorization) {
           current_package.default = true;
+        } else {
+          // And unselect any other packages
+          current_package.default = false;
         }
       }
     }
