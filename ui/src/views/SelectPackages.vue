@@ -6,7 +6,19 @@
           <div class="tile is-ancestor">
               <div class="tile is-parent" v-for="Lpackage in $root.$data.config.packages" :key="Lpackage.name" :index="Lpackage.name">
                   <div class="tile is-child">
-                      <div class="box clickable-box" v-if="Lpackage.requires_authorization && !$root.$data.is_authenticated" v-on:click="show_authentication">
+                      <div class="box clickable-box" v-if="!Lpackage.requires_authorization || (Lpackage.requires_authorization && $root.$data.has_reward_tier)" v-on:click.capture.stop="Lpackage.default = !Lpackage.default">
+                          <div class="ribbon" v-if="Lpackage.is_new"><span>New!</span></div>
+                          <label class="checkbox">
+                              <b-checkbox v-model="Lpackage.default">
+                                  {{ Lpackage.name }}
+                              </b-checkbox>
+                              <span v-if="Lpackage.installed"><i>(installed)</i></span>
+                          </label>
+                          <p>
+                              {{ Lpackage.description }}
+                          </p>
+                      </div>
+                      <div class="box clickable-box" v-else-if="Lpackage.requires_authorization && !$root.$data.is_authenticated" v-on:click="show_authentication">
                           <div class="ribbon" v-if="Lpackage.is_new"><span>New!</span></div>
                           <b-checkbox>
                               {{ Lpackage.name }}
@@ -33,25 +45,13 @@
                               {{Lpackage.need_subscription_description}}
                           </p>
                       </div>
-                      <div class="box clickable-box" v-else-if="Lpackage.requires_authorization && !$root.$data.has_reward_tier" v-on:click="show_authorization">
+                      <div class="box clickable-box" v-else v-on:click="show_authorization">
                           <div class="ribbon" v-if="Lpackage.is_new"><span>New!</span></div>
                           <b-checkbox>
                               {{ Lpackage.name }}
                           </b-checkbox>
                           <p>
                               {{Lpackage.need_reward_tier_description}}
-                          </p>
-                      </div>
-                      <div class="box clickable-box" v-else v-on:click.capture.stop="Lpackage.default = !Lpackage.default">
-                          <div class="ribbon" v-if="Lpackage.is_new"><span>New!</span></div>
-                          <label class="checkbox">
-                              <b-checkbox v-model="Lpackage.default">
-                                {{ Lpackage.name }}
-                              </b-checkbox>
-                              <span v-if="Lpackage.installed"><i>(installed)</i></span>
-                          </label>
-                          <p>
-                              {{ Lpackage.description }}
                           </p>
                       </div>
                   </div>

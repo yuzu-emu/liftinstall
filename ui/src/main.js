@@ -129,15 +129,9 @@ var app = new Vue({
         that.is_authenticated = Object.keys(that.jwt_token).length !== 0 && that.jwt_token.constructor === Object;
         if (that.is_authenticated) {
           // Give all permissions to vip roles
-          if (that.jwt_token.roles.indexOf("vip") > -1) {
-            that.is_linked = true;
-            that.is_subscribed = true;
-            that.has_reward_tier = true;
-          } else {
-            that.is_linked = that.jwt_token.isPatreonAccountLinked;
-            that.is_subscribed = that.jwt_token.isPatreonSubscriptionActive;
-            that.has_reward_tier = that.jwt_token.releaseChannels.indexOf("early-access") > -1;
-          }
+          that.is_linked = that.jwt_token.isPatreonAccountLinked;
+          that.is_subscribed = that.jwt_token.isPatreonSubscriptionActive;
+          that.has_reward_tier = that.jwt_token.releaseChannels.indexOf("early-access") > -1;
         }
         if (success) {
           success();
