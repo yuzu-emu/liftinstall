@@ -54,7 +54,7 @@ pub enum InstallMessage {
     EOF,
 }
 
-#[derive(Serialize, Deserialize, Clone)]
+#[derive(Serialize, Deserialize, Default, Clone)]
 pub struct Credentials {
     #[serde(default)]
     pub username: String,
@@ -67,6 +67,7 @@ pub struct Credentials {
 pub struct InstallationDatabase {
     pub packages: Vec<LocalInstallation>,
     pub shortcuts: Vec<String>,
+    #[serde(default)]
     pub credentials: Credentials,
 }
 
