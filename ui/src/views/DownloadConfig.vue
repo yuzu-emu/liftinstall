@@ -29,29 +29,27 @@ export default {
       this.$root.ajax('/api/config', function (e) {
         that.$root.config = e
 
-        that.choose_next_state()
+        // Update the updater if needed
+        if (that.$root.config.new_tool) {
+          this.$router.push('/install/updater')
+          return
+        }
+
+        that.$root.check_authentication(that.choose_next_state, that.choose_next_state)
       }, function (e) {
-        console.error('Got error while downloading config: ' +
-                    e)
+        console.error('Got error while downloading config: ' + e)
 
         if (that.$root.metadata.is_launcher) {
           // Just launch the target application
           that.$root.exit()
         } else {
           that.$router.replace({ name: 'showerr',
-            params: { msg: 'Got error while downloading config: ' +
-                                e } })
+            params: { msg: 'Got error while downloading config: ' + e } })
         }
       })
     },
     choose_next_state: function () {
       var app = this.$root
-      // Update the updater if needed
-      if (app.config.new_tool) {
-        this.$router.push('/install/updater')
-        return
-      }
-
       if (app.metadata.preexisting_install) {
         app.install_location = app.metadata.install_path
 

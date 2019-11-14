@@ -2,11 +2,8 @@
 
 use installer::InstallerFramework;
 
-use tasks::Task;
-use tasks::TaskDependency;
-use tasks::TaskMessage;
-use tasks::TaskOrdering;
-use tasks::TaskParamType;
+use tasks::check_authorization::CheckAuthorizationTask;
+use tasks::{Task, TaskDependency, TaskMessage, TaskOrdering, TaskParamType};
 
 use tasks::resolver::ResolvePackageTask;
 
@@ -30,10 +27,17 @@ impl Task for DownloadPackageTask {
         assert_eq!(input.len(), 1);
 
         let file = input.pop().log_expect("Should have input from resolver!");
-        let (version, file) = match file {
-            TaskParamType::File(v, f) => (v, f),
+        let (version, file, auth) = match file {
+            TaskParamType::Authentication(v, f, auth) => (v, f, auth),
             _ => return Err("Unexpected param type to download package".to_string()),
         };
+
+// TODO: move this back below checking for latest version after testing is done
+        if file.requires_authorization && auth.is_none() {
+            info!("Authorization required to update this package!");
+            messenger(&TaskMessage::AuthorizationRequired("AuthorizationRequired"));
+            return Ok(TaskParamType::Break);
+        }
 
         // Check to see if this is the newest file available already
         for element in &context.database.packages {
@@ -54,7 +58,7 @@ impl Task for DownloadPackageTask {
         let mut downloaded = 0;
         let mut data_storage: Vec<u8> = Vec::new();
 
-        stream_file(&file.url, |data, size| {
+        stream_file(&file.url, auth, |data, size| {
             {
                 data_storage.extend_from_slice(&data);
             }
@@ -90,12 +94,12 @@ impl Task for DownloadPackageTask {
     }
 
     fn dependencies(&self) -> Vec<TaskDependency> {
-        vec![TaskDependency::build(
-            TaskOrdering::Pre,
-            Box::new(ResolvePackageTask {
-                name: self.name.clone(),
-            }),
-        )]
+         vec![TaskDependency::build(
+             TaskOrdering::Pre,
+             Box::new(CheckAuthorizationTask {
+                 name: self.name.clone(),
+             }),
+         )]
     }
 
     fn name(&self) -> String {

@@ -9,6 +9,7 @@ use installer::InstallerFramework;
 use sources::types::File;
 use sources::types::Version;
 
+pub mod check_authorization;
 pub mod download_pkg;
 pub mod ensure_only_instance;
 pub mod install;
@@ -29,6 +30,8 @@ pub enum TaskParamType {
     None,
     /// Metadata about a file
     File(Version, File),
+    /// Authentication token for a package
+    Authentication(Version, File, Option<String>),
     /// Downloaded contents of a file
     FileContents(Version, File, Vec<u8>),
     /// List of shortcuts that have been generated
@@ -62,6 +65,7 @@ impl TaskDependency {
 /// A message from a task.
 pub enum TaskMessage<'a> {
     DisplayMessage(&'a str, f64),
+    AuthorizationRequired(&'a str),
     PackageInstalled,
 }
 

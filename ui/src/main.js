@@ -84,6 +84,13 @@ var app = new Vue({
     attrs: base_attributes,
     config: {},
     install_location: '',
+    username: '',
+    token: '',
+    jwt_token: {},
+    is_authenticated: false,
+    is_linked: false,
+    is_subscribed: false,
+    has_reward_tier: false,
     // If the option to pick an install location should be provided
     show_install_location: true,
     metadata: {
@@ -111,6 +118,34 @@ var app = new Vue({
         }
       )
     },
+    check_authentication: function (success, error) {
+      var that = this;
+      var app = this.$root;
+
+      app.ajax('/api/check-auth', function (auth) {
+        app.$data.username = auth.username;
+        app.$data.token = auth.token;
+        that.jwt_token = auth.jwt_token;
+        that.is_authenticated = Object.keys(that.jwt_token).length !== 0 && that.jwt_token.constructor === Object;
+        if (that.is_authenticated) {
+          // Give all permissions to vip roles
+          that.is_linked = that.jwt_token.isPatreonAccountLinked;
+          that.is_subscribed = that.jwt_token.isPatreonSubscriptionActive;
+          that.has_reward_tier = that.jwt_token.releaseChannels.indexOf("early-access") > -1;
+        }
+        if (success) {
+          success();
+        }
+      }, function (e) {
+        if (error) {
+          error();
+        }
+      }, {
+        "username": app.$data.username,
+        "token": app.$data.token
+      })
+    },
+
     ajax: ajax,
     stream_ajax: stream_ajax
   }

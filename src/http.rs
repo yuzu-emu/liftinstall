@@ -36,16 +36,22 @@ pub fn build_async_client() -> Result<AsyncClient, String> {
 }
 
 /// Streams a file from a HTTP server.
-pub fn stream_file<F>(url: &str, mut callback: F) -> Result<(), String>
+pub fn stream_file<F>(url: &str, authorization: Option<String>, mut callback: F) -> Result<(), String>
 where
     F: FnMut(Vec<u8>, u64) -> (),
 {
     assert_ssl(url)?;
 
-    let mut client = build_client()?
-        .get(url)
-        .send()
-        .map_err(|x| format!("Failed to GET resource: {:?}", x))?;
+    let mut client = if authorization.is_some() {
+        build_client()?.get(url)
+            .header("Authorization", format!("Bearer {}", authorization.unwrap()))
+            .send()
+            .map_err(|x| format!("Failed to GET resource: {:?}", x))?
+    } else {
+        build_client()?.get(url)
+            .send()
+            .map_err(|x| format!("Failed to GET resource: {:?}", x))?
+    };
 
     let size = match client.headers().get(CONTENT_LENGTH) {
         Some(ref v) => v

@@ -50,7 +50,16 @@ pub enum InstallMessage {
     Status(String, f64),
     PackageInstalled,
     Error(String),
+    AuthorizationRequired(String),
     EOF,
+}
+
+#[derive(Serialize, Deserialize, Default, Clone)]
+pub struct Credentials {
+    #[serde(default)]
+    pub username: String,
+    #[serde(default)]
+    pub token: String,
 }
 
 /// Metadata about the current installation itself.
@@ -58,6 +67,8 @@ pub enum InstallMessage {
 pub struct InstallationDatabase {
     pub packages: Vec<LocalInstallation>,
     pub shortcuts: Vec<String>,
+    #[serde(default)]
+    pub credentials: Credentials,
 }
 
 impl InstallationDatabase {
@@ -66,6 +77,7 @@ impl InstallationDatabase {
         InstallationDatabase {
             packages: Vec::new(),
             shortcuts: Vec::new(),
+            credentials: Credentials{username: String::new(), token: String::new()},
         }
     }
 }
@@ -111,6 +123,11 @@ macro_rules! declare_messenger_callback {
             TaskMessage::DisplayMessage(msg, progress) => {
                 if let Err(v) = $target.send(InstallMessage::Status(msg.to_string(), progress as _))
                 {
+                    error!("Failed to submit queue message: {:?}", v);
+                }
+            }
+            TaskMessage::AuthorizationRequired(msg) => {
+                if let Err(v) = $target.send(InstallMessage::AuthorizationRequired(msg.to_string())) {
                     error!("Failed to submit queue message: {:?}", v);
                 }
             }
@@ -252,7 +269,7 @@ impl InstallerFramework {
         let mut downloaded = 0;
         let mut data_storage: Vec<u8> = Vec::new();
 
-        http::stream_file(tool, |data, size| {
+        http::stream_file(tool, None, |data, size| {
             {
                 data_storage.extend_from_slice(&data);
             }

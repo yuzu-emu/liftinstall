@@ -15,7 +15,7 @@ futures = "0.1.25"
 mime_guess = "1.8.6"
 url = "1.7.2"
 
-reqwest = "0.9.12"
+reqwest = "0.9.21"
 number_prefix = "0.3.0"
 
 serde = "1.0.89"
@@ -37,6 +37,13 @@ fern = "0.5"
 chrono = "0.4.6"
 
 clap = "2.32.0"
+
+# used to open a link to the users default browser
+webbrowser = "0.5.2"
+# used in JWT based package authentication
+jsonwebtoken = "6"
+# used to decode the public key for verifying JWT tokens
+base64 = "0.10.1"
 
 [build-dependencies]
 walkdir = "2.2.7"
