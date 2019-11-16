@@ -10,8 +10,8 @@ use logging::LoggingErrors;
 use std::collections::HashMap;
 use url::form_urlencoded;
 
-pub fn handle(_service: &WebService, _req: Request) -> InternalFuture {
-    Box::new(_req.body().concat2().map(move |body| {
+pub fn handle(_service: &WebService, req: Request) -> InternalFuture {
+    Box::new(req.body().concat2().map(move |body| {
         let req = form_urlencoded::parse(body.as_ref())
             .into_owned()
             .collect::<HashMap<String, String>>();
