@@ -77,7 +77,10 @@ impl InstallationDatabase {
         InstallationDatabase {
             packages: Vec::new(),
             shortcuts: Vec::new(),
-            credentials: Credentials{username: String::new(), token: String::new()},
+            credentials: Credentials {
+                username: String::new(),
+                token: String::new(),
+            },
         }
     }
 }
@@ -127,7 +130,8 @@ macro_rules! declare_messenger_callback {
                 }
             }
             TaskMessage::AuthorizationRequired(msg) => {
-                if let Err(v) = $target.send(InstallMessage::AuthorizationRequired(msg.to_string())) {
+                if let Err(v) = $target.send(InstallMessage::AuthorizationRequired(msg.to_string()))
+                {
                     error!("Failed to submit queue message: {:?}", v);
                 }
             }
