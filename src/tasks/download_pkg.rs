@@ -5,8 +5,6 @@ use installer::InstallerFramework;
 use tasks::check_authorization::CheckAuthorizationTask;
 use tasks::{Task, TaskDependency, TaskMessage, TaskOrdering, TaskParamType};
 
-use tasks::resolver::ResolvePackageTask;
-
 use http::stream_file;
 
 use number_prefix::{NumberPrefix, Prefixed, Standalone};
@@ -32,7 +30,7 @@ impl Task for DownloadPackageTask {
             _ => return Err("Unexpected param type to download package".to_string()),
         };
 
-// TODO: move this back below checking for latest version after testing is done
+        // TODO: move this back below checking for latest version after testing is done
         if file.requires_authorization && auth.is_none() {
             info!("Authorization required to update this package!");
             messenger(&TaskMessage::AuthorizationRequired("AuthorizationRequired"));
@@ -94,12 +92,12 @@ impl Task for DownloadPackageTask {
     }
 
     fn dependencies(&self) -> Vec<TaskDependency> {
-         vec![TaskDependency::build(
-             TaskOrdering::Pre,
-             Box::new(CheckAuthorizationTask {
-                 name: self.name.clone(),
-             }),
-         )]
+        vec![TaskDependency::build(
+            TaskOrdering::Pre,
+            Box::new(CheckAuthorizationTask {
+                name: self.name.clone(),
+            }),
+        )]
     }
 
     fn name(&self) -> String {

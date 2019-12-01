@@ -38,9 +38,9 @@ extern crate chrono;
 
 extern crate clap;
 #[cfg(windows)]
-extern crate winapi;
-#[cfg(windows)]
 extern crate widestring;
+#[cfg(windows)]
+extern crate winapi;
 
 #[cfg(not(windows))]
 extern crate slug;

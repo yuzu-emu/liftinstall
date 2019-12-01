@@ -12,11 +12,11 @@ use log::Level;
 enum CallbackType {
     SelectInstallDir { callback_name: String },
     Log { msg: String, kind: String },
-    Test {}
+    Test {},
 }
 
 /// Starts the main web UI. Will return when UI is closed.
-pub fn start_ui(app_name: &str, http_address: &str, is_launcher: bool) {
+pub fn start_ui(app_name: &str, http_address: &str, _is_launcher: bool) {
     let size = (1024, 550);
 
     info!("Spawning web view instance");

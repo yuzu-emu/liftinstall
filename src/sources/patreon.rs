@@ -1,11 +1,11 @@
-//! github/mod.rs
+//! patreon.rs
 //!
-//! Contains the Github API implementation of a release source.
+//! Contains the yuzu-emu core API implementation of a release source.
 
-use sources::types::*;
 use http::build_client;
 use reqwest::header::USER_AGENT;
 use reqwest::StatusCode;
+use sources::types::*;
 
 pub struct PatreonReleases {}
 
@@ -44,9 +44,7 @@ impl ReleaseSource for PatreonReleases {
         match response.status() {
             StatusCode::OK => {}
             StatusCode::FORBIDDEN => {
-                return Err(
-                    "You are not eligible to download this release".to_string(),
-                );
+                return Err("You are not eligible to download this release".to_string());
             }
             _ => {
                 return Err(format!("Bad status code: {:?}.", response.status()));
@@ -77,18 +75,14 @@ impl ReleaseSource for PatreonReleases {
             let string = match file["name"].as_str() {
                 Some(v) => v,
                 None => {
-                    return Err(
-                        "JSON payload missing information about release name".to_string()
-                    );
+                    return Err("JSON payload missing information about release name".to_string());
                 }
             };
 
             let url = match file["url"].as_str() {
                 Some(v) => v,
                 None => {
-                    return Err(
-                        "JSON payload missing information about release URL".to_string()
-                    );
+                    return Err("JSON payload missing information about release URL".to_string());
                 }
             };
 
