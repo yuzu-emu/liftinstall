@@ -138,7 +138,7 @@ pub fn validate_token(
     };
 
     // Configure validation for audience and issuer if the configuration provides it
-    let validation = match validation {
+    let mut validation = match validation {
         Some(v) => {
             let mut valid = Validation::new(Algorithm::RS256);
             valid.iss = v.iss;
@@ -149,7 +149,8 @@ pub fn validate_token(
         }
         None => Validation::default(),
     };
-
+    validation.validate_exp = false;
+    validation.validate_nbf = false;
     // Verify the JWT token
     decode::<JWTClaims>(&body, pub_key.as_slice(), &validation)
         .map(|tok| tok.claims)
