@@ -39,6 +39,7 @@ mod natives {
             path: *const winapi::ctypes::wchar_t,
             args: *const winapi::ctypes::wchar_t,
             workingDir: *const winapi::ctypes::wchar_t,
+            exePath: *const winapi::ctypes::wchar_t,
         ) -> ::std::os::raw::c_int;
 
         pub fn isDarkThemeActive() -> ::std::os::raw::c_uint;
@@ -59,6 +60,7 @@ mod natives {
         target: &str,
         args: &str,
         working_dir: &str,
+        exe_path: &str,
     ) -> Result<String, String> {
         let source_file = format!(
             "{}\\Microsoft\\Windows\\Start Menu\\Programs\\{}.lnk",
@@ -78,6 +80,8 @@ mod natives {
             U16CString::from_str(args).log_expect("Error while converting to wchar_t");
         let native_working_dir =
             U16CString::from_str(working_dir).log_expect("Error while converting to wchar_t");
+        let native_exe_path =
+            U16CString::from_str(exe_path).log_expect("Error while converting to wchar_t");
 
         let shortcutResult = unsafe {
             saveShortcut(
@@ -86,6 +90,7 @@ mod natives {
                 native_target.as_ptr(),
                 native_args.as_ptr(),
                 native_working_dir.as_ptr(),
+                native_exe_path.as_ptr(),
             )
         };
 

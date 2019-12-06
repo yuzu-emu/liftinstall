@@ -43,7 +43,8 @@ extern "C" int saveShortcut(
     const wchar_t *description,
     const wchar_t *path,
     const wchar_t *args,
-    const wchar_t *workingDir)
+    const wchar_t *workingDir,
+    const wchar_t *exePath)
 {
     const char *errStr = NULL;
     HRESULT h;
@@ -82,6 +83,9 @@ extern "C" int saveShortcut(
         shellLink->SetDescription(description);
     if (path != NULL)
         shellLink->SetPath(path);
+    // default to using the first icon in the exe (usually correct)
+    if (exePath != NULL)
+        shellLink->SetIconLocation(exePath, 0);
     if (args != NULL)
         shellLink->SetArguments(args);
     if (workingDir != NULL)

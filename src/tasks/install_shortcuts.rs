@@ -83,6 +83,7 @@ impl Task for InstallShortcutsTask {
                 // TODO: Send by list
                 &format!("--launcher \"{}\"", exe_path),
                 &starting_dir,
+                exe_path,
             )?);
         }
 
