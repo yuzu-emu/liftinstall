@@ -15,6 +15,7 @@ auth_url = "https://api.yuzu-emu.org/jwt/installer/"
 [[packages]]
 name = "yuzu"
 description = "Includes frequent updates to yuzu with all the latest reviewed and tested features."
+icon = "thicc_logo_installer_shadow.png"
 default = true
     [packages.source]
     name = "github"
@@ -29,6 +30,7 @@ default = true
 [[packages]]
 name = "yuzu Early Access"
 description = "Bonus preview release for project supporters. Thanks for your support!"
+icon = "thicc_logo_installer__ea_shadow.png"
 # Displayed when the package has no authentication for the user
 need_authentication_description = "Click here to sign in with your yuzu account for Early Access"
 # Displayed when the package has an authentication, but the user has not linked their account

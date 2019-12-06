@@ -4,7 +4,7 @@
             <div class="container is-max-height">
                 <div class="columns is-max-height">
                     <div class="column is-one-third has-padding" v-if="!$root.$data.metadata.is_launcher">
-                        <img src="./assets/logo.png" width="60%" alt="Application icon" />
+                        <img src="./assets/light_mode_installer_logo.png" id="applicationIcon" alt="Application icon" />
                         <br />
                         <br />
 
@@ -50,6 +50,30 @@ body, div, span, h1, h2, h3, h4, h5, h6 {
     -ms-user-select: none;
     user-select: none;
     cursor: default;
+}
+
+#applicationIcon {
+    width:0px; height: 0px;
+    padding: 50px 60% 0px 0px;
+    background: url("./assets/light_mode_installer_logo.png") left top no-repeat;
+    background-size: contain;
+}
+
+body.has-background-black-ter #applicationIcon {
+    background: url("./assets/dark_mode_installer_logo.png") left top no-repeat;
+    background-size: contain;
+}
+
+.package-icon {
+    width: 3rem;
+    height: 3rem;
+    float: left;
+    padding-right: 10px;
+    padding-top: 10px;
+}
+
+.package-description {
+    overflow: hidden;
 }
 
 pre {

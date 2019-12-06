@@ -32,6 +32,8 @@ pub struct PackageShortcut {
 pub struct PackageDescription {
     pub name: String,
     pub description: String,
+    #[serde(default)]
+    pub icon: Option<String>,
     pub default: Option<bool>,
     pub source: PackageSource,
     #[serde(default)]

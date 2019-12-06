@@ -14,45 +14,60 @@
                               </b-checkbox>
                               <span v-if="Lpackage.installed"><i>(installed)</i></span>
                           </label>
-                          <p>
-                              {{ Lpackage.description }}
-                          </p>
+                          <div>
+                              <img class="package-icon" :src="`${publicPath + Lpackage.icon}`"/>
+                              <p class="package-description">
+                                  {{ Lpackage.description }}
+                              </p>
+                          </div>
                       </div>
                       <div class="box clickable-box" v-else-if="Lpackage.requires_authorization && !$root.$data.is_authenticated" v-on:click="show_authentication">
                           <div class="ribbon" v-if="Lpackage.is_new"><span>New!</span></div>
                           <b-checkbox>
                               {{ Lpackage.name }}
                           </b-checkbox>
-                          <p>
-                              {{Lpackage.need_authentication_description}}
-                          </p>
+                          <div>
+                              <img class="package-icon" :src="`${publicPath + Lpackage.icon}`"/>
+                              <p class="package-description">
+                                  {{ Lpackage.description }}
+                              </p>
+                          </div>
                       </div>
                       <div class="box clickable-box" v-else-if="Lpackage.requires_authorization && !$root.$data.is_linked" v-on:click="show_authorization">
                           <div class="ribbon" v-if="Lpackage.is_new"><span>New!</span></div>
                           <b-checkbox>
                               {{ Lpackage.name }}
                           </b-checkbox>
-                          <p>
-                              {{Lpackage.need_link_description}}
-                          </p>
+                          <div>
+                              <img class="package-icon" :src="`${publicPath + Lpackage.icon}`"/>
+                              <p class="package-description">
+                                  {{ Lpackage.description }}
+                              </p>
+                          </div>
                       </div>
                       <div class="box clickable-box" v-else-if="Lpackage.requires_authorization && !$root.$data.is_subscribed" v-on:click="show_authorization">
                           <div class="ribbon" v-if="Lpackage.is_new"><span>New!</span></div>
                           <b-checkbox>
                               {{ Lpackage.name }}
                           </b-checkbox>
-                          <p>
-                              {{Lpackage.need_subscription_description}}
-                          </p>
+                          <div>
+                              <img class="package-icon" :src="`${publicPath + Lpackage.icon}`"/>
+                              <p class="package-description">
+                                  {{ Lpackage.description }}
+                              </p>
+                          </div>
                       </div>
                       <div class="box clickable-box" v-else v-on:click="show_authorization">
                           <div class="ribbon" v-if="Lpackage.is_new"><span>New!</span></div>
                           <b-checkbox>
                               {{ Lpackage.name }}
                           </b-checkbox>
-                          <p>
-                              {{Lpackage.need_reward_tier_description}}
-                          </p>
+                          <div>
+                              <img class="package-icon" :src="`${publicPath + Lpackage.icon}`"/>
+                              <p class="package-description">
+                                  {{ Lpackage.description }}
+                              </p>
+                          </div>
                       </div>
                   </div>
               </div>
@@ -116,6 +131,7 @@ export default {
   },
   data: function () {
     return {
+      publicPath: process.env.BASE_URL,
       advanced: false
     }
   },
