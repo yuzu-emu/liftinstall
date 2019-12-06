@@ -148,7 +148,7 @@ pre {
 }
 
 /* Dark mode */
-body.has-background-black-ter .subtitle, body.has-background-black-ter .column > div {
+body.has-background-black-ter .subtitle, body.has-background-black-ter .column > div, body.has-background-black-ter section {
     color: hsl(0, 0%, 96%);
 }
 
