@@ -30,7 +30,7 @@ mod natives {
         HANDLE, PROCESS_QUERY_INFORMATION, PROCESS_TERMINATE, PROCESS_VM_READ,
     };
 
-    use widestring::U16CString;
+    use widestring::{U16CString, U16CStr};
 
     extern "C" {
         pub fn saveShortcut(
@@ -50,6 +50,28 @@ mod natives {
         ) -> ::std::os::raw::c_int;
 
         pub fn getSystemFolder(out_path: *mut ::std::os::raw::c_ushort) -> HRESULT;
+
+        pub fn getDesktopFolder(out_path: *mut ::std::os::raw::c_ushort) -> HRESULT;
+    }
+
+    // Needed here for Windows interop
+    #[allow(unsafe_code)]
+    pub fn create_desktop_shortcut(
+        name: &str,
+        description: &str,
+        target: &str,
+        args: &str,
+        working_dir: &str,
+        exe_path: &str,
+    ) -> Result<String, String> {
+        let mut cmd_path = [0u16; MAX_PATH + 1];
+        let result = unsafe { getDesktopFolder(cmd_path.as_mut_ptr()) };
+        let source_path = format!(
+            "{}\\{}.lnk",
+            String::from_utf16_lossy(&cmd_path[..count_u16(&cmd_path)]).as_str(),
+            name
+        );
+        create_shortcut_inner(source_path, name, description, target, args, working_dir, exe_path)
     }
 
     // Needed here for Windows interop
@@ -67,6 +89,20 @@ mod natives {
             env::var("APPDATA").log_expect("APPDATA is bad, apparently"),
             name
         );
+        create_shortcut_inner(source_file, name, description, target, args, working_dir, exe_path)
+    }
+
+    // Needed here for Windows interop
+    #[allow(unsafe_code)]
+    fn create_shortcut_inner(
+        source_file: String,
+        name: &str,
+        description: &str,
+        target: &str,
+        args: &str,
+        working_dir: &str,
+        exe_path: &str,
+    ) -> Result<String, String> {
 
         info!("Generating shortcut @ {:?}", source_file);
 
@@ -103,6 +139,17 @@ mod natives {
         }
     }
 
+    fn count_u16(u16str: &[u16]) -> usize {
+        let mut pos = 0;
+        for x in u16str.iter() {
+            if *x == 0 {
+                break;
+            }
+            pos += 1;
+        }
+        pos
+    }
+
     /// Cleans up the installer
     pub fn burn_on_exit(app_name: &str) {
         let current_exe = env::current_exe().log_expect("Current executable could not be found");
@@ -132,20 +179,13 @@ mod natives {
         let spawn_result: i32 = unsafe {
             let mut cmd_path = [0u16; MAX_PATH + 1];
             let result = getSystemFolder(cmd_path.as_mut_ptr());
-            let mut pos = 0;
-            for x in cmd_path.iter() {
-                if *x == 0 {
-                    break;
-                }
-                pos += 1;
-            }
             if result != winapi::shared::winerror::S_OK {
                 return;
             }
 
             spawnDetached(
                 U16CString::from_str(
-                    format!("{}\\cmd.exe", String::from_utf16_lossy(&cmd_path[..pos])).as_str(),
+                    format!("{}\\cmd.exe", String::from_utf16_lossy(&cmd_path[..count_u16(&cmd_path)])).as_str(),
                 )
                 .log_expect("Unable to convert string to wchar_t")
                 .as_ptr(),

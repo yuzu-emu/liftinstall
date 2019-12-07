@@ -30,7 +30,7 @@ export default new Router({
       component: SelectPackages
     },
     {
-      path: '/install/:kind',
+      path: '/install/:kind/:desktop_shortcut',
       name: 'install',
       component: InstallPackages
     },

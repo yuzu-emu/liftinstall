@@ -31,7 +31,7 @@ export default {
 
         // Update the updater if needed
         if (that.$root.config.new_tool) {
-          this.$router.push('/install/updater')
+          this.$router.push('/install/updater/false')
           return
         }
 
@@ -70,7 +70,7 @@ export default {
         }
 
         this.$router.replace({ name: 'migrate',
-          params: { next: app.metadata.is_launcher ? '/install/regular' : '/modify' } })
+          params: { next: app.metadata.is_launcher ? '/install/regular/false' : '/modify' } })
       } else {
         for (var x = 0; x < app.config.packages.length; x++) {
           app.config.packages[x].installed = false

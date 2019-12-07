@@ -164,3 +164,15 @@ extern "C" HRESULT getSystemFolder(wchar_t *out_path)
     }
     return result;
 }
+
+extern "C" HRESULT getDesktopFolder(wchar_t *out_path)
+{
+    PWSTR path = NULL;
+    HRESULT result = SHGetKnownFolderPath(FOLDERID_Desktop, 0, NULL, &path);
+    if (result == S_OK)
+    {
+        wcscpy_s(out_path, MAX_PATH + 1, path);
+        CoTaskMemFree(path);
+    }
+    return result;
+}

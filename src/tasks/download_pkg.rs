@@ -24,7 +24,7 @@ impl Task for DownloadPackageTask {
     ) -> Result<TaskParamType, String> {
         assert_eq!(input.len(), 1);
 
-        let file = input.pop().log_expect("Should have input from resolver!");
+        let file = input.pop().log_expect("Download Package Task should have input from resolver!");
         let (version, file, auth) = match file {
             TaskParamType::Authentication(v, f, auth) => (v, f, auth),
             _ => return Err("Unexpected param type to download package".to_string()),

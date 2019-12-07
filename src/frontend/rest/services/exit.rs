@@ -2,18 +2,15 @@
 //!
 //! The /api/exit closes down the application.
 
-use frontend::rest::services::default_future;
-use frontend::rest::services::Future;
-use frontend::rest::services::Request;
-use frontend::rest::services::Response;
-use frontend::rest::services::WebService;
+use frontend::rest::services::Future as InternalFuture;
+use frontend::rest::services::{default_future, Request, Response, WebService};
 
 use hyper::header::ContentType;
 use hyper::StatusCode;
 
 use std::process::exit;
 
-pub fn handle(service: &WebService, _req: Request) -> Future {
+pub fn handle(service: &WebService, _req: Request) -> InternalFuture {
     match service.get_framework_write().shutdown() {
         Ok(_) => {
             exit(0);

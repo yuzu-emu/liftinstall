@@ -115,7 +115,8 @@ var app = new Vue({
                 '\n\nPlease upload the log file (in ' + search_location + ') to ' +
                 'the ' + app.attrs.name + ' team'
           }});
-        }
+        },
+        {} // pass in nothing to cause `ajax` to post instead of get
       )
     },
     check_authentication: function (success, error) {

@@ -11,21 +11,26 @@ use config::PackageDescription;
 
 use logging::LoggingErrors;
 
-use native::create_shortcut;
+use native::create_desktop_shortcut;
 
-pub struct InstallShortcutsTask {
+pub struct InstallDesktopShortcutTask {
     pub name: String,
+    pub should_run: bool,
 }
 
-impl Task for InstallShortcutsTask {
+impl Task for InstallDesktopShortcutTask {
     fn execute(
         &mut self,
         _: Vec<TaskParamType>,
         context: &mut InstallerFramework,
         messenger: &dyn Fn(&TaskMessage),
     ) -> Result<TaskParamType, String> {
+        if !self.should_run {
+            return Ok(TaskParamType::GeneratedShortcuts(Vec::new()));
+        }
+
         messenger(&TaskMessage::DisplayMessage(
-            &format!("Generating shortcuts for package {:?}...", self.name),
+            &format!("Generating desktop shortcuts for package {:?}...", self.name),
             0.0,
         ));
 
@@ -46,12 +51,12 @@ impl Task for InstallShortcutsTask {
             .as_ref()
             .log_expect("Should have packages by now")
             .packages
-        {
-            if self.name == description.name {
-                metadata = Some(description.clone());
-                break;
+            {
+                if self.name == description.name {
+                    metadata = Some(description.clone());
+                    break;
+                }
             }
-        }
 
         let package = match metadata {
             Some(v) => v,
@@ -76,7 +81,7 @@ impl Task for InstallShortcutsTask {
                 .to_str()
                 .log_expect("Unable to build shortcut metadata (exe)");
 
-            installed_files.push(create_shortcut(
+            installed_files.push(create_desktop_shortcut(
                 &shortcut.name,
                 &shortcut.description,
                 tool_path,
@@ -103,6 +108,6 @@ impl Task for InstallShortcutsTask {
     }
 
     fn name(&self) -> String {
-        format!("InstallShortcutsTask (for {:?})", self.name)
+        format!("InstallDesktopShortcutTask (for {:?}, should_run = {:?})", self.name, self.should_run)
     }
 }
