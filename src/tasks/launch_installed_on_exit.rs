@@ -13,17 +13,15 @@ use config::PackageDescription;
 
 use logging::LoggingErrors;
 
-use native::create_desktop_shortcut;
-
 pub struct LaunchOnExitTask {}
 
 impl Task for LaunchOnExitTask {
 
     fn execute(
         &mut self,
-        mut input: Vec<TaskParamType>,
+        _: Vec<TaskParamType>,
         context: &mut InstallerFramework,
-        messenger: &dyn Fn(&TaskMessage),
+        _: &dyn Fn(&TaskMessage),
     ) -> Result<TaskParamType, String> {
         let pkg = &context.database.packages.first();
         if pkg.is_none() {

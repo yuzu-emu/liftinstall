@@ -30,7 +30,7 @@ mod natives {
         HANDLE, PROCESS_QUERY_INFORMATION, PROCESS_TERMINATE, PROCESS_VM_READ,
     };
 
-    use widestring::{U16CString, U16CStr};
+    use widestring::{U16CString};
 
     extern "C" {
         pub fn saveShortcut(
@@ -65,7 +65,7 @@ mod natives {
         exe_path: &str,
     ) -> Result<String, String> {
         let mut cmd_path = [0u16; MAX_PATH + 1];
-        let result = unsafe { getDesktopFolder(cmd_path.as_mut_ptr()) };
+        let _result = unsafe { getDesktopFolder(cmd_path.as_mut_ptr()) };
         let source_path = format!(
             "{}\\{}.lnk",
             String::from_utf16_lossy(&cmd_path[..count_u16(&cmd_path)]).as_str(),
@@ -96,7 +96,7 @@ mod natives {
     #[allow(unsafe_code)]
     fn create_shortcut_inner(
         source_file: String,
-        name: &str,
+        _name: &str,
         description: &str,
         target: &str,
         args: &str,
