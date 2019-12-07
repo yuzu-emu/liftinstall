@@ -13,7 +13,7 @@
           </label>
           <div>
             <img class="package-icon" :src="`${publicPath + Lpackage.icon}`"/>
-            <p class="package-description">
+            <p style="padding-top: 4px;" class="package-description">
               {{ Lpackage.description }}
             </p>
             <p class="package-description">
