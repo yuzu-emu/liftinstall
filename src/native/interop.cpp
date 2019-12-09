@@ -43,7 +43,8 @@ extern "C" int saveShortcut(
     const wchar_t *description,
     const wchar_t *path,
     const wchar_t *args,
-    const wchar_t *workingDir)
+    const wchar_t *workingDir,
+    const wchar_t *exePath)
 {
     const char *errStr = NULL;
     HRESULT h;
@@ -82,6 +83,9 @@ extern "C" int saveShortcut(
         shellLink->SetDescription(description);
     if (path != NULL)
         shellLink->SetPath(path);
+    // default to using the first icon in the exe (usually correct)
+    if (exePath != NULL)
+        shellLink->SetIconLocation(exePath, 0);
     if (args != NULL)
         shellLink->SetArguments(args);
     if (workingDir != NULL)
@@ -94,6 +98,10 @@ extern "C" int saveShortcut(
         errStr = "Failed to save shortcut";
         goto err;
     }
+
+    // Notify that a new shortcut was created using the shell api
+    SHChangeNotify(SHCNE_CREATE, SHCNF_PATH, shortcutPath, NULL);
+    SHChangeNotify(SHCNE_UPDATEITEM, SHCNF_PATH, shortcutPath, NULL);
 
     persistFile->Release();
     shellLink->Release();
@@ -153,6 +161,18 @@ extern "C" HRESULT getSystemFolder(wchar_t *out_path)
 {
     PWSTR path = NULL;
     HRESULT result = SHGetKnownFolderPath(FOLDERID_System, 0, NULL, &path);
+    if (result == S_OK)
+    {
+        wcscpy_s(out_path, MAX_PATH + 1, path);
+        CoTaskMemFree(path);
+    }
+    return result;
+}
+
+extern "C" HRESULT getDesktopFolder(wchar_t *out_path)
+{
+    PWSTR path = NULL;
+    HRESULT result = SHGetKnownFolderPath(FOLDERID_Desktop, 0, NULL, &path);
     if (result == S_OK)
     {
         wcscpy_s(out_path, MAX_PATH + 1, path);

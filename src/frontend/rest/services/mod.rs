@@ -136,7 +136,7 @@ impl Service for WebService {
             (Method::Get, "/api/config") => config::handle(self, req),
             (Method::Get, "/api/dark-mode") => dark_mode::handle(self, req),
             (Method::Get, "/api/default-path") => default_path::handle(self, req),
-            (Method::Get, "/api/exit") => exit::handle(self, req),
+            (Method::Post, "/api/exit") => exit::handle(self, req),
             (Method::Get, "/api/packages") => packages::handle(self, req),
             (Method::Get, "/api/installation-status") => installation_status::handle(self, req),
             (Method::Post, "/api/check-auth") => authentication::handle(self, req),

@@ -8,6 +8,7 @@ use tasks::install_global_shortcut::InstallGlobalShortcutsTask;
 use tasks::install_pkg::InstallPackageTask;
 use tasks::save_executable::SaveExecutableTask;
 use tasks::uninstall_pkg::UninstallPackageTask;
+use tasks::launch_installed_on_exit::LaunchOnExitTask;
 
 use tasks::Task;
 use tasks::TaskDependency;
@@ -19,6 +20,7 @@ pub struct InstallTask {
     pub items: Vec<String>,
     pub uninstall_items: Vec<String>,
     pub fresh_install: bool,
+    pub create_desktop_shortcuts: bool,
 }
 
 impl Task for InstallTask {
@@ -60,7 +62,7 @@ impl Task for InstallTask {
         for item in &self.items {
             elements.push(TaskDependency::build(
                 TaskOrdering::Pre,
-                Box::new(InstallPackageTask { name: item.clone() }),
+                Box::new(InstallPackageTask { name: item.clone(), create_desktop_shortcuts: self.create_desktop_shortcuts }),
             ));
         }
 
@@ -74,6 +76,11 @@ impl Task for InstallTask {
                 TaskOrdering::Pre,
                 Box::new(InstallGlobalShortcutsTask {}),
             ));
+
+            elements.push(TaskDependency::build(
+                TaskOrdering::Post,
+                Box::new(LaunchOnExitTask {})
+            ))
         }
 
         elements

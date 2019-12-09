@@ -1,5 +1,6 @@
 installing_message = "Reminder: yuzu is an <b>experimental</b> emulator. Stuff will break!"
 hide_advanced = true
+new_tool = "https://github.com/yuzu-emu/liftinstall/releases/download/1.8/yuzu_install.exe"
 
 [authentication]
 # Base64 encoded version of the public key for validating the JWT token. Must be in DER format

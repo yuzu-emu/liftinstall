@@ -46,12 +46,12 @@ export default {
       was_install: !this.$route.params.uninstall,
       was_update: this.$route.params.update,
       was_migrate: this.$route.params.migrate,
-      has_installed: this.$route.params.packages_installed > 0
+      has_installed: this.$route.params.packages_installed > 0,
     }
   },
   methods: {
     exit: function () {
-      this.$root.exit()
+      this.$root.exit();
     }
   }
 }

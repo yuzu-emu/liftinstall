@@ -58,6 +58,7 @@ impl Task for InstallGlobalShortcutsTask {
             // TODO: Send by list
             "",
             &starting_dir,
+            "",
         )?;
 
         if !shortcut_file.is_empty() {

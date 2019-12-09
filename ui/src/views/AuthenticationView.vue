@@ -1,5 +1,6 @@
 <template>
   <div class="column has-padding">
+    <section>
     <b-message type="is-info" :active.sync="browser_opened">
       Page opened! Check your default browser for the page, and follow the instructions there to link your patreon account.
       When you are done, enter the token below.
@@ -10,18 +11,27 @@
       To be an Early Access member, you must be a Patreon Early Access Subscriber.
     </b-message>
     <div>
-    If you are a subscriber, <a v-on:click="launch_browser('https://profile.yuzu-emu.org/')">click here to link your yuzu-emu.org account</a>
-    <br>
-    If you are not already a subscriber, <a v-on:click="launch_browser('https://www.patreon.com/join/yuzuteam/checkout?rid=2822069')">click here to become one</a>
+      If you are a subscriber, <a v-on:click="launch_browser('https://profile.yuzu-emu.org/')">click here to link your yuzu-emu.org account</a>
+      <br>
+      If you are not already a subscriber, <a v-on:click="launch_browser('https://www.patreon.com/join/yuzuteam/checkout?rid=2822069')">click here to become one</a>
     </div>
-    <br>
-
-    <div class="control">
-      <label for="token">Token</label>
-      <input class="input" type="text" v-model="combined_token" placeholder="Token" id="token">
-    </div>
+    </section>
 
     <br>
+
+    <section>
+      <p>Token</p>
+      <b-field>
+        <b-input type="text" v-model="combined_token" placeholder="Token" id="token" style='width: 50em;'></b-input>
+        <p class="control">
+          <button class="button is-info" v-on:click="paste">Paste</button>
+        </p>
+      </b-field>
+    </section>
+
+    <br>
+
+    <section>
 
     <b-message type="is-danger" :active.sync="invalid_token">
       Login failed!
@@ -47,6 +57,7 @@
       Your patreon is linked, and you are supporting the project, but you must first join the Early Access reward tier!
       <a v-on:click="launch_browser('https://www.patreon.com/join/yuzuteam/checkout?rid=2822069')">Log into your patreon account</a> and choose to back the Early Access reward tier.
     </b-message>
+    </section>
 
     <div class="is-left-floating is-bottom-floating">
       <p class="control">
@@ -63,6 +74,8 @@
 </template>
 
 <script>
+
+
 export default {
   name: 'AuthenticationView',
   created: function() {
@@ -119,6 +132,11 @@ export default {
   methods: {
     go_back: function () {
       this.$router.go(-1)
+    },
+    paste: function () {
+      document.getElementById("token").focus();
+      document.execCommand("paste");
+
     },
     launch_browser: function(url) {
       const that = this;

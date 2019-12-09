@@ -22,7 +22,7 @@ impl Task for CheckAuthorizationTask {
     ) -> Result<TaskParamType, String> {
         assert_eq!(input.len(), 1);
 
-        let params = input.pop().log_expect("Should have input from resolver!");
+        let params = input.pop().log_expect("Check Authorization Task should have input from resolver!");
         let (version, file) = match params {
             TaskParamType::File(v, f) => Ok((v, f)),
             _ => Err("Unexpected TaskParamType in CheckAuthorization: {:?}"),

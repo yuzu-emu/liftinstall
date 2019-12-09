@@ -24,6 +24,7 @@ export default {
       is_uninstall: false,
       is_updater_update: false,
       is_update: false,
+      install_desktop_shortcut: false,
       failed_with_error: false,
       authorization_required: false,
       packages_installed: 0
@@ -33,7 +34,9 @@ export default {
     this.is_uninstall = this.$route.params.kind === 'uninstall'
     this.is_updater_update = this.$route.params.kind === 'updater'
     this.is_update = this.$route.params.kind === 'update'
+    this.install_desktop_shortcut = this.$route.params.desktop_shortcut === 'true'
     console.log('Installer kind: ' + this.$route.params.kind)
+    console.log('Installing desktop shortcut: ' + this.$route.params.desktop_shortcut)
     this.install()
   },
   methods: {
@@ -53,6 +56,7 @@ export default {
       }
 
       results['path'] = app.install_location
+      results['installDesktopShortcut'] = that.install_desktop_shortcut
 
       var targetUrl = '/api/start-install'
       if (this.is_uninstall) {
@@ -88,7 +92,7 @@ export default {
         if (that.is_updater_update) {
           // Continue with what we were doing
           if (app.metadata.is_launcher) {
-            that.$router.replace('/install/regular')
+            that.$router.replace('/install/regular/' + that.install_desktop_shortcut.toString())
           } else {
             if (app.metadata.preexisting_install) {
               that.$router.replace('/modify')

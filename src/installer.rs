@@ -179,6 +179,7 @@ impl InstallerFramework {
         items: Vec<String>,
         messages: &Sender<InstallMessage>,
         fresh_install: bool,
+        create_desktop_shortcuts: bool,
     ) -> Result<(), String> {
         info!(
             "Framework: Installing {:?} to {:?}",
@@ -207,6 +208,7 @@ impl InstallerFramework {
             items,
             uninstall_items,
             fresh_install,
+            create_desktop_shortcuts,
         });
 
         let mut tree = DependencyTree::build(task);
