@@ -31,7 +31,7 @@ export default {
 
         // Update the updater if needed
         if (that.$root.config.new_tool) {
-          this.$router.push('/install/updater/false')
+          that.$router.push('/install/updater/false')
           return
         }
 
