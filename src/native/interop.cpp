@@ -99,6 +99,10 @@ extern "C" int saveShortcut(
         goto err;
     }
 
+    // Notify that a new shortcut was created using the shell api
+    SHChangeNotify(SHCNE_CREATE, SHCNF_PATH, shortcutPath, NULL);
+    SHChangeNotify(SHCNE_UPDATEITEM, SHCNF_PATH, shortcutPath, NULL);
+
     persistFile->Release();
     shellLink->Release();
     CoUninitialize();
