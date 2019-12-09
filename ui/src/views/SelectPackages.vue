@@ -30,11 +30,6 @@
       </div>
     </div>
 
-    <div class="subtitle is-6" v-if="!$root.$data.metadata.preexisting_install && advanced">
-
-    </div>
-
-
     <div class="subtitle is-6" v-if="!$root.$data.metadata.preexisting_install && advanced">Install Location</div>
     <div class="field has-addons" v-if="!$root.$data.metadata.preexisting_install && advanced">
       <div class="control is-expanded">
@@ -55,12 +50,13 @@
              v-on:click="advanced = true">Advanced...</a>
         </p>
         <p class="control">
-          <a class="button is-dark is-medium" v-if="!$root.$data.metadata.preexisting_install"
-             v-on:click="install">Install</a>
-        </p>
-        <p class="control">
-          <a class="button is-dark is-medium" v-if="$root.$data.metadata.preexisting_install"
-             v-on:click="install">Modify</a>
+          <!-- Disable the Install button on a fresh install with no packages selected -->
+          <button v-if="$root.$data.metadata.preexisting_install" class="button is-medium is-dark" v-on:click="install">
+            Modify
+          </button>
+          <button v-else class="button is-medium is-dark" v-on:click="install" :disabled="!this.has_package_selected">
+            Install
+          </button>
         </p>
       </div>
     </div>
@@ -92,6 +88,17 @@
         publicPath: process.env.BASE_URL,
         advanced: false,
         installDesktopShortcut: true
+      }
+    },
+    computed: {
+      has_package_selected: function() {
+        for (let i=0; i < this.$root.config.packages.length; ++i) {
+          let pkg = this.$root.config.packages[i];
+          if (pkg.default) {
+            return true;
+          }
+        }
+        return false;
       }
     },
     methods: {
