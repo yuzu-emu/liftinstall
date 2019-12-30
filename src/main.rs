@@ -72,6 +72,7 @@ use clap::Arg;
 
 use config::BaseAttributes;
 use std::process::{Command, Stdio, exit};
+use std::fs;
 
 static RAW_CONFIG: &'static str = include_str!(concat!(env!("OUT_DIR"), "/bootstrap.toml"));
 
@@ -135,26 +136,9 @@ fn main() {
     // check for existing installs if we are running as a fresh install
     let installed_path = PathBuf::from(framework.get_default_path().unwrap());
     if fresh_install && installed_path.join("metadata.json").exists() {
-        info!("Existing install detected! Trying to launch this install instead");
-        // Generate installer path
-        let platform_extension = if cfg!(windows) {
-            "maintenancetool.exe"
-        } else {
-            "maintenancetool"
-        };
-        let existing = installed_path.join(platform_extension).into_os_string().into_string();
-        if existing.is_ok() {
-            info!("Launching {:?}", existing);
-            let success = Command::new(existing.unwrap())
-                .stdout(Stdio::null())
-                .stderr(Stdio::null())
-                .spawn();
-            if success.is_ok() {
-                exit(0);
-            } else {
-                error!("Unable to start existing yuzu maintenance tool. Launching old one instead");
-            }
-        }
+        info!("Existing install detected! Copying Trying to launch this install instead");
+        // Ignore the return value from this since it should exit the application if its successful
+        let _ = replace_existing_install(&current_exe, &installed_path);
     }
 
     let is_launcher = if let Some(string) = matches.value_of("launcher") {
@@ -167,4 +151,46 @@ fn main() {
 
     // Start up the UI
     frontend::launch(&app_name, is_launcher, framework);
+}
+
+fn replace_existing_install(current_exe: &PathBuf, installed_path: &PathBuf) -> Result<(), String> {
+    // Generate installer path
+    let platform_extension = if cfg!(windows) {
+        "maintenancetool.exe"
+    } else {
+        "maintenancetool"
+    };
+
+    let new_tool = if cfg!(windows) {
+        "maintenancetool_new.exe"
+    } else {
+        "maintenancetool_new"
+    };
+
+    if let Err(v) = fs::copy(current_exe, installed_path.join(new_tool)) {
+        return Err(format!("Unable to copy installer binary: {:?}", v));
+    }
+
+    let existing = installed_path.join(platform_extension).into_os_string().into_string();
+    let new = installed_path.join(new_tool).into_os_string().into_string();
+    if existing.is_ok() && new.is_ok() {
+        // Remove NTFS alternate stream which tells the operating system that the updater was downloaded from the internet
+        if cfg!(windows) {
+            let _ = fs::remove_file(installed_path.join("maintenancetool_new.exe:Zone.Identifier:$DATA"));
+        }
+        info!("Launching {:?}", existing);
+        let success = Command::new(new.unwrap())
+            .arg("--swap")
+            .arg(existing.unwrap())
+            .stdout(Stdio::null())
+            .stderr(Stdio::null())
+            .spawn();
+        if success.is_ok() {
+            exit(0);
+        } else {
+            error!("Unable to start existing yuzu maintenance tool. Launching old one instead");
+        }
+    }
+
+    Ok(())
 }
