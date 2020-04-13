@@ -119,7 +119,7 @@ export default {
       // setter
       set: function (newValue) {
         try {
-          var split = atob(newValue).split(':')
+          var split = atob(newValue.trim()).split(':')
           this.$root.$data.username = split[0];
           this.$root.$data.token = split[1];
           this.invalid_token = false;
